@@ -57,7 +57,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Halide.Core\Halide.csproj">
+    <ProjectReference Include="..\Halide\Halide.csproj">
       <Project>{c2b3286c-a4a2-48b9-9d88-5bde2c7c4f89}</Project>
       <Name>Halide</Name>
     </ProjectReference>
