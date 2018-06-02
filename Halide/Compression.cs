@@ -22,12 +22,12 @@ namespace Fynydd.Halide
         /// </example>
         /// <param name="text">String to compress.</param>
         /// <returns>A compressed string.</returns>
-        public static string CompressString(string text)
+        public static byte[] CompressString(this string text)
         {
             byte[] buffer = Encoding.UTF8.GetBytes(text);
             MemoryStream ms = new MemoryStream();
 
-            using (GZipStream zip = new GZipStream(ms, CompressionMode.Compress, true))
+            using (GZipStream zip = new GZipStream(ms, CompressionLevel.Optimal, true))
             {
                 zip.Write(buffer, 0, buffer.Length);
             }
@@ -40,7 +40,7 @@ namespace Fynydd.Halide
             byte[] gzipBuffer = new byte[compressed.Length + 4];
             System.Buffer.BlockCopy(compressed, 0, gzipBuffer, 4, compressed.Length);
             System.Buffer.BlockCopy(BitConverter.GetBytes(buffer.Length), 0, gzipBuffer, 0, 4);
-            return Convert.ToBase64String(gzipBuffer);
+            return gzipBuffer;
         }
 
         /// <summary>
@@ -53,9 +53,8 @@ namespace Fynydd.Halide
         /// </example>
         /// <param name="compressedText">String to decompress.</param>
         /// <returns>A decompressed string.</returns>
-        public static string DecompressString(string compressedText)
+        public static string DecompressString(this byte[] gzipBuffer)
         {
-            byte[] gzipBuffer = Convert.FromBase64String(compressedText);
             using (MemoryStream ms = new MemoryStream())
             {
                 int msgLength = BitConverter.ToInt32(gzipBuffer, 0);
@@ -64,6 +63,7 @@ namespace Fynydd.Halide
                 byte[] buffer = new byte[msgLength];
 
                 ms.Position = 0;
+
                 using (GZipStream zip = new GZipStream(ms, CompressionMode.Decompress))
                 {
                     zip.Read(buffer, 0, buffer.Length);
@@ -83,10 +83,10 @@ namespace Fynydd.Halide
         /// </example>
         /// <param name="buffer">Byte array to compress.</param>
         /// <returns>A compressed byte array.</returns>
-        public static byte[] Compress(byte[] buffer)
+        public static byte[] Compress(this byte[] buffer)
         {
             MemoryStream ms = new MemoryStream();
-            GZipStream zip = new GZipStream(ms, CompressionMode.Compress, true);
+            GZipStream zip = new GZipStream(ms, CompressionLevel.Optimal, true);
             zip.Write(buffer, 0, buffer.Length);
             zip.Close();
             ms.Position = 0;
@@ -110,7 +110,7 @@ namespace Fynydd.Halide
         /// </example>
         /// <param name="gzipBuffer">Byte array to decompress.</param>
         /// <returns>A decompressed byte array.</returns>
-        public static byte[] Decompress(byte[] gzipBuffer)
+        public static byte[] Decompress(this byte[] gzipBuffer)
         {
             MemoryStream ms = new MemoryStream();
             int msgLength = BitConverter.ToInt32(gzipBuffer, 0);

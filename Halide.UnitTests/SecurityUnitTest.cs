@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fynydd.Halide;
 using Fynydd.Halide.Constants;
 
-namespace Halide.UnitTests
+namespace Fynydd.Halide.UnitTests
 {
     /// <summary>
     /// Summary description for IdentificationUnitTests
