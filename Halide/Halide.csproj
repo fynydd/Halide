@@ -61,6 +61,7 @@
     <Compile Include="RestHelper.cs" />
     <Compile Include="Security.cs" />
     <Compile Include="Session.cs" />
+    <Compile Include="SQL.cs" />
     <Compile Include="Storage.cs" />
     <Compile Include="Temporal.cs" />
   </ItemGroup>

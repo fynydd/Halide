@@ -236,13 +236,13 @@ namespace Fynydd.Halide
         }
 
         /// <summary>
-        /// Triple DES 256 bit string encryption.
+        /// AES256 string encryption.
         /// </summary>
         /// <example>
         /// <code>
         /// Byte[] ivec = { 180, 54, 206, 210, 10, 101, 6, 87, 13, 3, 241, 189, 176, 175, 109, 217 };
         /// Byte[] key = { 151, 4, 109, 42, 135, 99, 67, 82, 242, 233, 16, 200, 9, 83, 196, 178, 56, 74, 90, 36, 206, 129, 81, 229, 67, 82, 242, 233, 16, 200, 9, 83 };
-        /// String encryptedVar = Security.Encrypt(dataToEncrypt, key, ivec);
+        /// string encryptedVar = Security.Encrypt<string>(dataToEncrypt, key, ivec);
         /// </code>
         /// </example>
         /// <param name="data">Data to encrypt.</param>
@@ -343,53 +343,53 @@ namespace Fynydd.Halide
         }
 
         /// <summary>
-        /// Triple DES 256 bit encryption of 64-bit integers.
+        /// AES256 string encryption.
         /// </summary>
         /// <example>
         /// <code>
-        /// String encryptedVar = Security.EncryptInt64(2346517451, "151, 4, 109, 42, 135, 99, 67, 82, 242, 233, 16, 200, 9, 83, 196, 178, 56, 74, 90, 36, 206, 129, 81, 229, 67, 82, 242, 233, 16, 200, 9, 83", "180, 54, 206, 210, 10, 101, 6, 87, 13, 3, 241, 189, 176, 175, 109, 217" );
+        /// string encryptedVar = Security.Encrypt<string>(myData, "151, 4, 109, 42, 135, 99, 67, 82, 242, 233, 16, 200, 9, 83, 196, 178, 56, 74, 90, 36, 206, 129, 81, 229, 67, 82, 242, 233, 16, 200, 9, 83", "180, 54, 206, 210, 10, 101, 6, 87, 13, 3, 241, 189, 176, 175, 109, 217" );
         /// </code>
         /// </example>
-        /// <param name="data">Long integer to encrypt.</param>
+        /// <param name="data">Data to encrypt.</param>
         /// <param name="key">24 byte key string for encrypting the data.</param>
         /// <param name="ivec">18 byte initialization vector string for the encryption routine.</param>
-        /// <returns>An encrypted string.</returns>
+        /// <returns>A BASE64+ encrypted string.</returns>
         public static string Encrypt<T>(this T data, string key, string ivec)
         {
             return Encrypt(data, CreateBaseKey(key), CreateInitVector(ivec));
         }
 
         /// <summary>
-        /// Triple DES 256 bit string decryption.
+        /// AES256 string decryption.
         /// </summary>
         /// <example>
         /// <code>
-        /// String decryptedVar = Security.Decrypt(encryptedVar, "151, 4, 109, 42, 135, 99, 67, 82, 242, 233, 16, 200, 9, 83, 196, 178, 56, 74, 90, 36, 206, 129, 81, 229, 67, 82, 242, 233, 16, 200, 9, 83", "180, 54, 206, 210, 10, 101, 6, 87, 13, 3, 241, 189, 176, 175, 109, 217" );
+        /// string decryptedVar = Security.Decrypt<string>(encryptedVar, "151, 4, 109, 42, 135, 99, 67, 82, 242, 233, 16, 200, 9, 83, 196, 178, 56, 74, 90, 36, 206, 129, 81, 229, 67, 82, 242, 233, 16, 200, 9, 83", "180, 54, 206, 210, 10, 101, 6, 87, 13, 3, 241, 189, 176, 175, 109, 217" );
         /// </code>
         /// </example>
         /// <param name="data">String to decrypt.</param>
         /// <param name="key">24 byte key string for decrypting the data. This must match the key used to encrypt the data.</param>
         /// <param name="ivec">18 byte initialization vector string for the decryption routine. This must match the init vector used to encrypt the data.</param>
-        /// <returns>A decrypted string</returns>
+        /// <returns>A decrypted variable</returns>
         public static T Decrypt<T>(this string data, string key, string ivec)
         {
             return Decrypt<T>(data, CreateBaseKey(key), CreateInitVector(ivec));
         }
 
         /// <summary>
-        /// Triple DES 256 bit string decryption.
+        /// AES256 string decryption.
         /// </summary>
         /// <example>
         /// <code>
         /// Byte[] ivec = { 180, 54, 206, 210, 10, 101, 6, 87, 13, 3, 241, 189, 176, 175, 109, 217 };
         /// Byte[] key = { 151, 4, 109, 42, 135, 99, 67, 82, 242, 233, 16, 200, 9, 83, 196, 178, 56, 74, 90, 36, 206, 129, 81, 229, 67, 82, 242, 233, 16, 200, 9, 83 };
-        /// String decryptedVar = Security.Decrypt(encryptedVar, bytekey, ivec);
+        /// String decryptedVar = Security.Decrypt<string>(encryptedVar, bytekey, ivec);
         /// </code>
         /// </example>
         /// <param name="data">String to decrypt.</param>
         /// <param name="key">24 byte array key for decrypting the data. This must match the key used to encrypt the data.</param>
         /// <param name="ivec">18 byte array init vector for decrypting the data. This must match the init vector used to encrypt the data.</param>
-        /// <returns>A decrypted string</returns>
+        /// <returns>A decrypted variable</returns>
         public static T Decrypt<T>(this string data, byte[] key, byte[] ivec)
         {
             T result = default(T);
