@@ -264,7 +264,49 @@ namespace Fynydd.Halide
                     inputInBytes = stringBytes;
                 }
 
-                else if (typeof(T) == typeof(int) || typeof(T) == typeof(double) || typeof(T) == typeof(Double) || typeof(T) == typeof(float) || typeof(T) == typeof(Int16) || typeof(T) == typeof(Int32) || typeof(T) == typeof(Int64) || typeof(T) == typeof(Single) || typeof(T) == typeof(short) || typeof(T) == typeof(long))
+                else if (typeof(T) == typeof(short) || typeof(T) == typeof(Int16))
+                {
+                    byte[] stringBytes = BitConverter.GetBytes((short)Convert.ChangeType(data, typeof(short)));
+                    inputInBytes = stringBytes;
+                }
+
+                else if (typeof(T) == typeof(ushort) || typeof(T) == typeof(UInt16))
+                {
+                    byte[] stringBytes = BitConverter.GetBytes((ushort)Convert.ChangeType(data, typeof(ushort)));
+                    inputInBytes = stringBytes;
+                }
+
+                else if (typeof(T) == typeof(int) || typeof(T) == typeof(Int32))
+                {
+                    byte[] stringBytes = BitConverter.GetBytes((int)Convert.ChangeType(data, typeof(int)));
+                    inputInBytes = stringBytes;
+                }
+
+                else if (typeof(T) == typeof(uint) || typeof(T) == typeof(UInt32))
+                {
+                    byte[] stringBytes = BitConverter.GetBytes((uint)Convert.ChangeType(data, typeof(uint)));
+                    inputInBytes = stringBytes;
+                }
+
+                else if (typeof(T) == typeof(long) || typeof(T) == typeof(Int64))
+                {
+                    byte[] stringBytes = BitConverter.GetBytes((long)Convert.ChangeType(data, typeof(long)));
+                    inputInBytes = stringBytes;
+                }
+
+                else if (typeof(T) == typeof(ulong) || typeof(T) == typeof(UInt64))
+                {
+                    byte[] stringBytes = BitConverter.GetBytes((ulong)Convert.ChangeType(data, typeof(ulong)));
+                    inputInBytes = stringBytes;
+                }
+
+                else if (typeof(T) == typeof(float) || typeof(T) == typeof(Single))
+                {
+                    byte[] stringBytes = BitConverter.GetBytes((float)Convert.ChangeType(data, typeof(float)));
+                    inputInBytes = stringBytes;
+                }
+
+                else if (typeof(T) == typeof(double) || typeof(T) == typeof(Double))
                 {
                     byte[] stringBytes = BitConverter.GetBytes((double)Convert.ChangeType(data, typeof(double)));
                     inputInBytes = stringBytes;
@@ -400,7 +442,49 @@ namespace Fynydd.Halide
                         }
                     }
 
-                    else if (typeof(T) == typeof(int) || typeof(T) == typeof(double) || typeof(T) == typeof(Double) || typeof(T) == typeof(float) || typeof(T) == typeof(Int16) || typeof(T) == typeof(Int32) || typeof(T) == typeof(Int64) || typeof(T) == typeof(Single) || typeof(T) == typeof(short) || typeof(T) == typeof(long))
+                    else if (typeof(T) == typeof(short) || typeof(T) == typeof(Int16))
+                    {
+                        short decrypted = BitConverter.ToInt16(bytes, 0);
+                        result = (T)Convert.ChangeType(decrypted, typeof(T));
+                    }
+
+                    else if (typeof(T) == typeof(ushort) || typeof(T) == typeof(UInt16))
+                    {
+                        ushort decrypted = BitConverter.ToUInt16(bytes, 0);
+                        result = (T)Convert.ChangeType(decrypted, typeof(T));
+                    }
+
+                    else if (typeof(T) == typeof(int) || typeof(T) == typeof(Int32))
+                    {
+                        int decrypted = BitConverter.ToInt32(bytes, 0);
+                        result = (T)Convert.ChangeType(decrypted, typeof(T));
+                    }
+
+                    else if (typeof(T) == typeof(uint) || typeof(T) == typeof(UInt32))
+                    {
+                        uint decrypted = BitConverter.ToUInt32(bytes, 0);
+                        result = (T)Convert.ChangeType(decrypted, typeof(T));
+                    }
+
+                    else if (typeof(T) == typeof(long) || typeof(T) == typeof(Int64))
+                    {
+                        long decrypted = BitConverter.ToInt64(bytes, 0);
+                        result = (T)Convert.ChangeType(decrypted, typeof(T));
+                    }
+
+                    else if (typeof(T) == typeof(ulong) || typeof(T) == typeof(UInt64))
+                    {
+                        ulong decrypted = BitConverter.ToUInt64(bytes, 0);
+                        result = (T)Convert.ChangeType(decrypted, typeof(T));
+                    }
+
+                    else if (typeof(T) == typeof(float) || typeof(T) == typeof(Single))
+                    {
+                        float decrypted = BitConverter.ToSingle(bytes, 0);
+                        result = (T)Convert.ChangeType(decrypted, typeof(T));
+                    }
+
+                    else if (typeof(T) == typeof(double) || typeof(T) == typeof(Double))
                     {
                         double decrypted = BitConverter.ToDouble(bytes, 0);
                         result = (T)Convert.ChangeType(decrypted, typeof(T));
