@@ -762,4 +762,191 @@ namespace Fynydd.Halide.Constants
     }
 
     #endregion
+
+    #region Storage
+
+    /// <summary>
+    /// The PathOptions enumeration is used to specify file attributes, like "hidden", "system", et al.
+    /// </summary>
+    [Flags]
+    public enum PathOptions : byte
+    {
+        /// <summary>
+        /// Normal files.
+        /// </summary>
+        Path = 1,
+
+        /// <summary>
+        /// Hidden files.
+        /// </summary>
+        Hidden = 2,
+
+        /// <summary>
+        /// System files.
+        /// </summary>
+        System = 4
+    }
+
+    #endregion
+
+    #region Email
+
+    /// <summary>
+    /// Format for email body content.
+    /// </summary>
+    public enum EmailFormat
+    {
+        /// <summary>
+        /// Quotable plain text format.
+        /// </summary>
+        PlainText,
+
+        /// <summary>
+        /// HTML format.
+        /// </summary>
+        Html,
+
+        /// <summary>
+        /// 7-bit plain text format.
+        /// </summary>
+        PlainText7Bit
+    }
+
+    #endregion
+
+    #region HTTP
+
+    /// <summary>
+    /// Enumeration used with the GetWebPage method.
+    /// </summary>
+    public enum GetWebPageMethod
+    {
+        /// <summary>
+        /// Http GET operation.
+        /// </summary>
+        Get,
+
+        /// <summary>
+        /// Http POST operation.
+        /// </summary>
+        Post
+    };
+
+    #endregion
+
+    #region RestHelper
+
+    /// <summary>
+    /// Types of REST requests
+    /// </summary>
+    public enum RequestTypeEnum
+    {
+        /// <summary>
+        /// Does a get against the source.
+        /// </summary>
+        GET,
+        /// <summary>
+        /// Does a post against the source.
+        /// </summary>
+        POST,
+        /// <summary>
+        /// Does a put against the soruce
+        /// </summary>
+        PUT,
+        /// <summary>
+        /// Does a patch against the soruce
+        /// </summary>
+        PATCH,
+        /// <summary>
+        /// Does a delete against the soruce
+        /// </summary>
+        DELETE
+    }
+
+    /// <summary>
+    /// Types of request and response
+    /// </summary>
+    public enum RequestFormatEnum
+    {
+        /// <summary>
+        /// JSON
+        /// </summary>
+        JSON,
+        /// <summary>
+        /// XML
+        /// </summary>
+        XML,
+        /// <summary>
+        /// HTML
+        /// </summary>
+        HTML
+    }
+
+    #endregion
+
+    #region Security
+
+    /// <summary>
+    /// LogonSessionType for LogonUser method.
+    /// </summary>
+    public enum LogonSessionType : int
+    {
+        /// <summary>
+        /// Interactive authentication.
+        /// </summary>
+        Interactive = 2,
+
+        /// <summary>
+        /// Network authentication.
+        /// </summary>
+        Network,
+
+        /// <summary>
+        /// Batch authentication.
+        /// </summary>
+        Batch,
+
+        /// <summary>
+        /// Service authentication.
+        /// </summary>
+        Service,
+
+        /// <summary>
+        /// Network authentication using clear text.
+        /// </summary>
+        NetworkCleartext = 8,
+
+        /// <summary>
+        /// New Credentials.
+        /// </summary>
+        NewCredentials
+    }
+
+    /// <summary>
+    /// Logon provider enum for LogonUser method.
+    /// </summary>
+    public enum LogonProvider : int
+    {
+        /// <summary>
+        /// Default platform.
+        /// </summary>
+        Default = 0, // default for platform (use this!)
+
+        /// <summary>
+        /// Windows NT 3.5 style.
+        /// </summary>
+        WinNT35,     // sends smoke signals to authority
+
+        /// <summary>
+        /// Windows NT 4.0 style.
+        /// </summary>
+        WinNT40,     // uses NTLM
+
+        /// <summary>
+        /// Windows 2000 style using Kerberos or NTLM.
+        /// </summary>
+        WinNT50      // negotiates Kerberos or NTLM
+    }
+
+    #endregion
 }

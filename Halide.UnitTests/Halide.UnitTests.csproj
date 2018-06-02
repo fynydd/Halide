@@ -52,6 +52,7 @@
     <Compile Include="IdentificationUnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TemporalUnitTests.cs" />
+    <Compile Include="SecurityUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

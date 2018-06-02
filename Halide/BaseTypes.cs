@@ -645,6 +645,81 @@ namespace Fynydd.Halide
             return result;
         }
 
+        /// <summary>
+        /// Return the current string with HTML tags removed.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// string newBodyText = oldString.StripHtml();
+        /// </code>
+        /// </example>
+        /// <param name="value">Current string to process.</param>
+        /// <param name="convertBreaks">
+        /// <![CDATA[
+        /// Converts "<br>" and "<br />" to \r\n and converts "</p>" to \r\n\r\n.
+        /// ]]>
+        /// </param>
+        /// <param name="keepLinks">Keep and anchor tags intact.</param>
+        /// <param name="decodeEntities">Convert HTML entities to standard ASCII, like &copy; to ©</param>
+        /// <returns>A string with HTML tags removed.</returns>
+        public static string StripHtml(this string value, bool convertBreaks = false, bool keepLinks = false, bool decodeEntities = false)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return value;
+            }
+
+            else
+            {
+                Regex tags = new Regex(@"<(script|style).*?>.*?</(script|style).*?>", RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline);
+                value = tags.Replace(value, "");
+
+                if (convertBreaks == true)
+                {
+                    tags = new Regex(@"<br[\s]*[/]*>");
+                    value = tags.Replace(value, "\r\n");
+                    value = value.Replace("</p>", "\r\n\r\n");
+                }
+
+                if (keepLinks == true)
+                {
+                    value = Regex.Replace(value, "(<)(?=/??a)", "[[[[[", RegexOptions.IgnoreCase);
+                }
+
+                tags = new Regex(@"<[^>]+>|</[^>]+>");
+                value = tags.Replace(value, "");
+
+                if (keepLinks == true)
+                {
+                    value = value.Replace("[[[[[", "<");
+                }
+
+                if (decodeEntities)
+                {
+                    value = WebUtility.HtmlDecode(value);
+                }
+
+                return value;
+            }
+        }
+
+        /// <summary>
+        /// Convert an object to a string. If null an empty string is returned.
+        /// </summary>
+        /// <param name="obj">Object to convert to a string</param>
+        /// <returns>String value or an empty string if null</returns>
+        public static string SafeToString(this object obj)
+        {
+            string result = "";
+
+            if (obj != null)
+            {
+                result = obj.ToString();
+            }
+
+            return result;
+        }
+
         #endregion
 
         #region Variables
@@ -717,6 +792,50 @@ namespace Fynydd.Halide
 
                 return randomized;
             }
+        }
+
+        /// <summary>
+        /// Creates a string from the sequence by concatenating the result
+        /// of the specified string selector function for each element.
+        /// Concatenates the strings with no delimitter.
+        /// </summary>
+        /// <param name="source">The source IEnumerable object</param>
+        /// <param name="stringSelector">Abstraction for the individual string objects</param>
+        public static string ToConcatenatedString<T>(
+            this IEnumerable<T> source,
+            Func<T, string> stringSelector)
+        {
+            return ToConcatenatedString(source, stringSelector, String.Empty);
+        }
+
+        /// <summary>
+        /// Creates a string from the sequence by concatenating the result
+        /// of the specified string selector function for each element.
+        /// Concatenates the string with a specified delimitter.
+        /// </summary>
+        /// <param name="source">The source IEnumerable object</param>
+        /// <param name="stringSelector">Abstraction for the individual string objects</param>
+        /// <param name="delimitter">The string which separates each concatenated item</param>
+        public static string ToConcatenatedString<T>(
+            this IEnumerable<T> source,
+            Func<T, string> stringSelector,
+            string delimitter)
+        {
+            var b = new StringBuilder();
+            bool needsSeparator = false;
+
+            foreach (var item in source)
+            {
+                if (needsSeparator)
+                {
+                    b.Append(delimitter);
+                }
+
+                b.Append(stringSelector(item));
+                needsSeparator = true;
+            }
+
+            return b.ToString();
         }
 
         #endregion

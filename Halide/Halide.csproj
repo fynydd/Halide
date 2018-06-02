@@ -33,8 +33,11 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Net" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Mvc, Version=3.0.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -43,13 +46,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching.cs" />
+    <Compile Include="Client.cs" />
+    <Compile Include="Compression.cs" />
+    <Compile Include="Configuration.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Email.cs" />
+    <Compile Include="Http.cs" />
     <Compile Include="Identification.cs" />
+    <Compile Include="Imaging.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BaseTypes.cs" />
     <Compile Include="DataReader.cs" />
+    <Compile Include="RestHelper.cs" />
+    <Compile Include="Security.cs" />
+    <Compile Include="Session.cs" />
     <Compile Include="Storage.cs" />
     <Compile Include="Temporal.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="SharpScss">
+      <Version>1.3.8</Version>
+    </PackageReference>
+    <PackageReference Include="YUICompressor.NET.Signed">
+      <Version>3.0.17</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
