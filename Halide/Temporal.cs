@@ -440,7 +440,13 @@ namespace Fynydd.Halide
         {
             string result = "";
 
-            if (typeof(T) == typeof(int) || typeof(T) == typeof(decimal) || typeof(T) == typeof(Decimal) || typeof(T) == typeof(double) || typeof(T) == typeof(Double) || typeof(T) == typeof(float) || typeof(T) == typeof(Int16) || typeof(T) == typeof(Int32) || typeof(T) == typeof(Int64) || typeof(T) == typeof(Single) || typeof(T) == typeof(short) || typeof(T) == typeof(long))
+            if (
+                typeof(T) == typeof(short) || typeof(T) == typeof(Int16) || typeof(T) == typeof(ushort) || typeof(T) == typeof(UInt16) ||
+                typeof(T) == typeof(int) || typeof(T) == typeof(Int32) || typeof(T) == typeof(uint) || typeof(T) == typeof(UInt32) ||
+                typeof(T) == typeof(long) || typeof(T) == typeof(Int64) || typeof(T) == typeof(ulong) || typeof(T) == typeof(UInt64) ||
+                typeof(T) == typeof(float) || typeof(T) == typeof(Single) || 
+                typeof(T) == typeof(double) || typeof(T) == typeof(Double)
+                )
             {
                 double count = Convert.ToDouble(value);
 
@@ -643,7 +649,13 @@ namespace Fynydd.Halide
                 }
             }
 
-            if (typeof(T) == typeof(int) || typeof(T) == typeof(decimal) || typeof(T) == typeof(Decimal) || typeof(T) == typeof(double) || typeof(T) == typeof(Double) || typeof(T) == typeof(float) || typeof(T) == typeof(Int16) || typeof(T) == typeof(Int32) || typeof(T) == typeof(Int64) || typeof(T) == typeof(Single) || typeof(T) == typeof(short) || typeof(T) == typeof(long))
+            if (
+                typeof(T) == typeof(short) || typeof(T) == typeof(Int16) || typeof(T) == typeof(ushort) || typeof(T) == typeof(UInt16) ||
+                typeof(T) == typeof(int) || typeof(T) == typeof(Int32) || typeof(T) == typeof(uint) || typeof(T) == typeof(UInt32) ||
+                typeof(T) == typeof(long) || typeof(T) == typeof(Int64) || typeof(T) == typeof(ulong) || typeof(T) == typeof(UInt64) ||
+                typeof(T) == typeof(float) || typeof(T) == typeof(Single) ||
+                typeof(T) == typeof(double) || typeof(T) == typeof(Double)
+                )
             {
                 monthNumber = Convert.ToInt32(value);
             }
