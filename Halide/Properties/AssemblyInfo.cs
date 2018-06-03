@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Halide")]
+[assembly: AssemblyTitle("Halide Tools for ASP.NET/MVC")]
 [assembly: AssemblyDescription("A treasure trove of useful extension methods, helpers, and tools for ASP.NET and MVC")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Fynydd LLC")]
