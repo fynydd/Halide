@@ -406,9 +406,9 @@ namespace Fynydd.Halide
         /// <param name="value">DateTime variable to format.</param>
         /// <param name="format">Date format.</param>
         /// <returns>String with the date formatted as requested.</returns>
-        public static string DateFormat(this object value, DateFormats format)
+        public static string DateFormat(this string value, DateFormats format)
         {
-            if (value != null)
+            if (string.IsNullOrEmpty(value) == false)
             {
                 DateTime date = Convert.ToDateTime(value);
 
@@ -419,13 +419,13 @@ namespace Fynydd.Halide
 
                 else
                 {
-                    return "";
+                    return string.Empty;
                 }
             }
 
             else
             {
-                return "";
+                return string.Empty;
             }
         }
 

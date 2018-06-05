@@ -721,11 +721,19 @@ namespace Fynydd.Halide
         /// <param name="keepLinks">Keep and anchor tags intact.</param>
         /// <param name="decodeEntities">Convert HTML entities to standard ASCII, like &copy; to ©</param>
         /// <returns>A string with HTML tags removed.</returns>
-        public static string StripHtml(this object value, bool convertBreaks = false, bool keepLinks = false, bool decodeEntities = false)
+        public static string StripHtml(this StringBuilder value, bool convertBreaks = false, bool keepLinks = false, bool decodeEntities = false)
         {
-            string value2 = Convert.ToString(value);
+            if (value != null)
+            {
+                string value2 = value.ToString();
 
-            return value2.StripHtml(convertBreaks, keepLinks, decodeEntities);
+                return value2.StripHtml(convertBreaks, keepLinks, decodeEntities);
+            }
+
+            else
+            {
+                return string.Empty;
+            }
         }
 
         /// <summary>
