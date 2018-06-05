@@ -360,6 +360,24 @@ namespace Fynydd.Halide
         }
 
         /// <summary>
+        /// AES256 string encryption.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// string encryptedVar = Security.Encrypt<string>(myData);
+        /// </code>
+        /// </example>
+        /// <param name="data">Data to encrypt.</param>
+        /// <returns>A BASE64+ encrypted string.</returns>
+        public static string Encrypt<T>(this T data)
+        {
+            string key = Configuration.GetKeyValue("EncryptionBaseKey", "Fynydd.Halide");
+            string ivec = Configuration.GetKeyValue("EncryptionInitVector", "Fynydd.Halide");
+
+            return Encrypt(data, CreateBaseKey(key), CreateInitVector(ivec));
+        }
+
+        /// <summary>
         /// AES256 string decryption.
         /// </summary>
         /// <example>
@@ -373,6 +391,24 @@ namespace Fynydd.Halide
         /// <returns>A decrypted variable</returns>
         public static T Decrypt<T>(this string data, string key, string ivec)
         {
+            return Decrypt<T>(data, CreateBaseKey(key), CreateInitVector(ivec));
+        }
+
+        /// <summary>
+        /// AES256 string decryption.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// string decryptedVar = Security.Decrypt<string>(encryptedVar);
+        /// </code>
+        /// </example>
+        /// <param name="data">String to decrypt.</param>
+        /// <returns>A decrypted variable</returns>
+        public static T Decrypt<T>(this string data)
+        {
+            string key = Configuration.GetKeyValue("EncryptionBaseKey", "Fynydd.Halide");
+            string ivec = Configuration.GetKeyValue("EncryptionInitVector", "Fynydd.Halide");
+
             return Decrypt<T>(data, CreateBaseKey(key), CreateInitVector(ivec));
         }
 
