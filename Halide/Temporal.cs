@@ -45,6 +45,7 @@ namespace Fynydd.Halide
         {
             return DateDiff<T>(startDate, endDate, howtocompare, TimeZone.CurrentTimeZone.GetUtcOffset(startDate).Hours, TimeZone.CurrentTimeZone.GetUtcOffset(endDate).Hours);
         }
+
         /// <summary>
         /// Compares 2 dates and determine the time interval between them taking time zones into account.
         /// </summary>
@@ -402,16 +403,18 @@ namespace Fynydd.Halide
         /// <summary>
         /// Format a date/time variable for output.
         /// </summary>
-        /// <param name="date">DateTime variable to format.</param>
+        /// <param name="value">DateTime variable to format.</param>
         /// <param name="format">Date format.</param>
         /// <returns>String with the date formatted as requested.</returns>
-        public static string DateFormat(this string date, DateFormats format)
+        public static string DateFormat(this object value, DateFormats format)
         {
-            if (!string.IsNullOrEmpty(date))
+            if (value != null)
             {
-                if (Identification.IsDate(date))
+                DateTime date = Convert.ToDateTime(value);
+
+                if (date != null)
                 {
-                    return DateFormat(Convert.ToDateTime(date), format);
+                    return DateFormat(date, format);
                 }
 
                 else
