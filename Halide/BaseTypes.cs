@@ -705,6 +705,30 @@ namespace Fynydd.Halide
         }
 
         /// <summary>
+        /// Return the current string with HTML tags removed.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// string newBodyText = oldString.StripHtml();
+        /// </code>
+        /// </example>
+        /// <param name="value">Current string to process.</param>
+        /// <param name="convertBreaks">
+        /// <![CDATA[
+        /// Converts "<br>" and "<br />" to \r\n and converts "</p>" to \r\n\r\n.
+        /// ]]>
+        /// </param>
+        /// <param name="keepLinks">Keep and anchor tags intact.</param>
+        /// <param name="decodeEntities">Convert HTML entities to standard ASCII, like &copy; to ©</param>
+        /// <returns>A string with HTML tags removed.</returns>
+        public static string StripHtml(this object value, bool convertBreaks = false, bool keepLinks = false, bool decodeEntities = false)
+        {
+            string value2 = Convert.ToString(value);
+
+            return value2.StripHtml(convertBreaks, keepLinks, decodeEntities);
+        }
+
+        /// <summary>
         /// Convert an object to a string. If null an empty string is returned.
         /// </summary>
         /// <param name="obj">Object to convert to a string</param>
