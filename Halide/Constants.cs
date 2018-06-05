@@ -60,6 +60,16 @@ namespace Fynydd.Halide.Constants
     }
 
     /// <summary>
+    /// Types of HTML line breaking schemes
+    /// </summary>
+    public enum HtmlLinefeeds
+    {
+        Paragraphs,
+
+        LineBreaks
+    }
+
+    /// <summary>
     /// Words to keep lower case when using AP Title Case,
     /// unless they are the first or last word.
     /// </summary>
@@ -84,6 +94,34 @@ namespace Fynydd.Halide.Constants
             "to",
             "up",
             "yet"
+        };
+    }
+
+    /// <summary>
+    /// HTML tags
+    /// </summary>
+    public static class Tags
+    {
+        /// <summary>
+        /// Dangerous (scriptable) HTML tags
+        /// </summary>
+        public static readonly string[] Dangerous =
+        {
+            "applet",
+            "body",
+            "embed",
+            "frame",
+            "script",
+            "frameset",
+            "html",
+            "iframe",
+            "img",
+            "style",
+            "layer",
+            "link",
+            "ilayer",
+            "meta",
+            "object"
         };
     }
 
@@ -810,6 +848,29 @@ namespace Fynydd.Halide.Constants
         /// 7-bit plain text format.
         /// </summary>
         PlainText7Bit
+    }
+
+    /// <summary>
+    /// Email header items
+    /// </summary>
+    public static class EmailHeader
+    {
+        /// <summary>
+        /// Email header properties
+        /// </summary>
+        public static readonly string[] Properties = {
+
+            "x-mailer:",
+            "x-rcpt-to:",
+            "x-uidl:",
+            "content-transfer-encoding:",
+            "content-type:",
+            "mime-version:",
+            "x-sender:",
+            "bcc:",
+            "cc:",
+            "x-receiver:"
+        };
     }
 
     #endregion

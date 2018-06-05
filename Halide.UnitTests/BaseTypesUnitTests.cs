@@ -3,6 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Fynydd.Halide;
 using Fynydd.Halide.Constants;
+using System.IO;
+using System.Reflection;
 
 namespace Fynydd.Halide.UnitTests
 {
@@ -183,6 +185,37 @@ namespace Fynydd.Halide.UnitTests
 
             Assert.AreNotEqual(values[0], randomized[0]);
             Assert.AreNotEqual(values, randomized);
+        }
+
+        [TestMethod]
+        public void Sanitization()
+        {
+            var path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+            string naughtyScripts = Storage.ReadFile(path + @"\NaughtyScripts.txt");
+            string niceScripts = Storage.ReadFile(path + @"\NiceScripts.txt");
+            Assert.AreEqual(niceScripts, naughtyScripts.Sanitize());
+
+            string naughtySql = Storage.ReadFile(path + @"\NaughtySql.txt");
+            string niceSql = Storage.ReadFile(path + @"\NiceSql.txt");
+            Assert.AreEqual(niceSql, naughtySql.SqlSanitize());
+
+            string naughtyEmail = Storage.ReadFile(path + @"\NaughtyEmailBody.txt");
+            string niceEmail = Storage.ReadFile(path + @"\NiceEmailBody.txt");
+            Assert.AreEqual(niceEmail, naughtyEmail.SanitizeForEmail());
+        }
+
+        [TestMethod]
+        public void LineBreaks()
+        {
+            string linefeeds = @"This is a test.
+Paragraph 2.
+Paragraph 3.";
+            string linefeedsConvertedP = @"<p>This is a test.</p><p>Paragraph 2.</p><p>Paragraph 3.</p>";
+            string linefeedsConvertedBR = @"This is a test.<br />Paragraph 2.<br />Paragraph 3.";
+
+            Assert.AreEqual(linefeedsConvertedP, linefeeds.ConvertLineBreaks(HtmlLinefeeds.Paragraphs));
+            Assert.AreEqual(linefeedsConvertedBR, linefeeds.ConvertLineBreaks(HtmlLinefeeds.LineBreaks));
         }
     }
 }

@@ -11,6 +11,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Web;
 
 using Fynydd.Halide.Constants;
 
@@ -516,7 +517,7 @@ namespace Fynydd.Halide
         /// <typeparam name="T">Numeric type being evaluated</typeparam>
         /// <param name="val">Number to evaluate against the total</param>
         /// <param name="total">Total value from which to derive a percentage for val</param>
-        /// <param name="places">Number of decimal places to use in the final output</param>
+        /// <param name="places">Number of decimal places to use in the result output</param>
         /// <returns>Percentage value output without the trailing "%"</returns>
         public static string MakePercentage<T>(this T val, decimal total, int places)
         {
@@ -580,30 +581,30 @@ namespace Fynydd.Halide
         /// <returns>URL-friendly slug</returns>
         public static string MakeSlug(this string input)
         {
-            string final = input.Trim().ToLower();
+            string result = input.Trim().ToLower();
 
-            final = final.Replace("'", "");
+            result = result.Replace("'", "");
 
             Regex stripStuff = new Regex("([^a-zA-Z0-9])");
-            final = stripStuff.Replace(final, "-");
+            result = stripStuff.Replace(result, "-");
 
             stripStuff = new Regex("_{1,}");
-            final = stripStuff.Replace(final, "-");
+            result = stripStuff.Replace(result, "-");
 
             stripStuff = new Regex("_$");
-            final = stripStuff.Replace(final, "");
+            result = stripStuff.Replace(result, "");
 
             stripStuff = new Regex("^_");
-            final = stripStuff.Replace(final, "");
+            result = stripStuff.Replace(result, "");
 
-            while (final.IndexOf("--") > 0)
+            while (result.IndexOf("--") > 0)
             {
-                final = final.Replace("--", "-");
+                result = result.Replace("--", "-");
             }
 
-            final = final.Trim('-');
+            result = result.Trim('-');
 
-            return (final);
+            return (result);
         }
 
         /// <summary>
@@ -715,6 +716,287 @@ namespace Fynydd.Halide
             if (obj != null)
             {
                 result = obj.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// <![CDATA[
+        /// Sanitize a string so that it only contains inert text data.
+        /// it removes markup, scripts, decodes escape sequences, and optionally 
+        /// removes email header properties.
+        /// Converts HTML </p> to \r\n\r\n and <br> to \r\n sequences.
+        /// ]]>
+        /// </summary>
+        /// <param name="value">String to sanitize.</param>
+        /// <param name="alsoSanitizeForEmail">Also sanitize for email inclusion; defaults to false</param>
+        /// <returns>A sanitized string.</returns>
+        public static string Sanitize(this string value, bool alsoSanitizeForEmail = false)
+        {
+            string result = string.Empty;
+
+            if (string.IsNullOrEmpty(value) == false)
+            {
+                result = value.SanitizeEscapes();
+                result = result.StripHtml(true, false);
+                
+                if (alsoSanitizeForEmail)
+                {
+                    result = result.SanitizeForEmail();
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// <![CDATA[
+        /// Sanitize a string so that it only contains inert text data.
+        /// it removes markup, scripts, decodes escape sequences, and optionally 
+        /// removes email header properties.
+        /// Converts HTML </p> to \r\n\r\n and <br> to \r\n sequences.
+        /// Also replaces single apostrophes with two apostrophes.
+        /// ]]>
+        /// </summary>
+        /// <param name="value">String to sanitize.</param>
+        /// <param name="alsoSanitizeForEmail">Also sanitize for email inclusion; defaults to false</param>
+        /// <returns>A sanitized string.</returns>
+        public static string SqlSanitize(this string value, bool alsoSanitizeForEmail = false)
+        {
+            return value.Sanitize(alsoSanitizeForEmail).Replace("'", "''");
+        }
+
+        /// <summary>
+        /// Return the current string with potentially dangerous tags removed.
+        /// Dangerous tags that are removed include:
+        /// <para>applet, body, embed, frame, script, frameset, html, iframe, img, style, layer, link, ilayer, meta, object.</para>
+        /// <para>javascript properties injected into other tags are also removed.</para>
+        /// </summary>
+        /// <param name="value">String to process.</param>
+        /// <returns>A string that has been stripped of scripts.</returns>
+        public static string StripDangerousTags(this string value)
+        {
+            string result = string.Empty;
+
+            if (string.IsNullOrEmpty(value) == false)
+            {
+                result = value;
+
+                foreach (var tag in Tags.Dangerous)
+                {
+                    result = result.StripSpecificTag(tag);
+                }
+
+                result = result.StripDangerousProperties();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Return the current string with all escape sequences (e.g. &#34;) changed to appropriate and ASCII characters (e.g. "),
+        /// so dangerous markup can more easily be identified.
+        /// </summary>
+        /// <param name="value">String to process.</param>
+        /// <returns>A string that has been filtered for escape sequences.</returns>
+        public static string SanitizeEscapes(this string value)
+        {
+            string result = string.Empty;
+
+            if (string.IsNullOrEmpty(value) == false)
+            {
+                result = HttpUtility.HtmlDecode(value);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Return the current string with all instances of a specific tag removed.
+        /// </summary>
+        /// <param name="value">String to process.</param>
+        /// <param name="tagName">Tag name to strip (e.g. blockquote)</param>
+        /// <returns>A string that has been filtered.</returns>
+        public static string StripSpecificTag(this string value, string tagName)
+        {
+            string result = string.Empty;
+
+            if (string.IsNullOrEmpty(value) == false)
+            {
+                result = SanitizeEscapes(value);
+
+                Regex tags = new Regex(@"<[\s]*" + tagName + @".*?>", RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline);
+                result = tags.Replace(result, "");
+
+                tags = new Regex(@"<[\s]*/[\s]*?" + tagName + @".*?>", RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline);
+                result = tags.Replace(result, "");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Remove all occurrences of dangerous tag properties from a string.
+        /// Helps to prevent injected javascript from running.
+        /// </summary>
+        /// <param name="value">String to process.</param>
+        /// <returns>A string that has been filtered.</returns>
+        public static string StripDangerousProperties(this string value)
+        {
+            string result = string.Empty;
+
+            if (string.IsNullOrEmpty(value) == false)
+            {
+                Regex tags = new Regex(@"[\s]*text[\s]*/[\s]*javascript[\s]*", RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline);
+                result = tags.Replace(value, "");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Remove all occurrences of dangerous email header properties from a string.
+        /// This is used to prevent someone from inserting code into submitted form data
+        /// that will trick the page into sending email to other people.
+        /// <para>E-mail header text that will be removed includes:</para>
+        /// <para>"x-mailer:", "x-rcpt-to:", "x-uidl:", "content-transfer-encoding:", "content-type:", "mime-version:", "x-sender:", "bcc:", "cc:", "x-receiver:"</para>
+        /// </summary>
+        /// <param name="value">String to process.</param>
+        /// <returns>A string that has been filtered.</returns>
+        public static string SanitizeForEmail(this string value)
+        {
+            string result = string.Empty;
+
+            if (string.IsNullOrEmpty(value) == false)
+            {
+                result = HttpUtility.HtmlDecode(value);
+
+                foreach (var prop in EmailHeader.Properties)
+                {
+                    result = result.ReplaceWord(prop, "", false);
+                }
+
+                result = result.Replace("\r.\r", "\r..\r");
+                result = result.Replace("\n.\n", "\n..\n");
+                result = result.Replace("\r\n.\r\n", "\r\n..\r\n");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// <![CDATA[
+        /// Converts return/lineFeeds to HTML tags, except between [nofeed][/nofeed] blocks.
+        /// ]]>
+        /// </summary>
+        /// <param name="value">String to convert.</param>
+        /// <param name="feedType">Line break scheme to use</param>
+        /// <returns>A string with HTML line breaks added.</returns>
+        public static string ConvertLineBreaks(this string value, HtmlLinefeeds feedType)
+        {
+            string result = string.Empty;
+
+            if (string.IsNullOrEmpty(value) == false)
+            {
+                int checkRET = 0;
+                int checkLF = 0;
+                Regex regex = null;
+                MatchCollection theMatches = null;
+
+                result = value;
+
+                if (result.IndexOf("/nofeed>") > 0)
+                {
+                    regex = new Regex(@"<nofeed>(.*?)</nofeed>", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+
+                    theMatches = regex.Matches(value);
+
+                    for (int index = 0; index < theMatches.Count; index++)
+                    {
+                        result = result.Replace(theMatches[index].ToString(), theMatches[index].ToString().Replace("\r", "[[[pk:return]]]"));
+                        result = result.Replace(theMatches[index].ToString(), theMatches[index].ToString().Replace("\n", "[[[pk:linefeed]]]"));
+                    }
+                }
+
+                if (result.IndexOf("/nofeed]") > 0)
+                {
+                    regex = new Regex(@"\[nofeed\](.*?)\[/nofeed\]", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+
+                    theMatches = regex.Matches(value);
+
+                    for (int index = 0; index < theMatches.Count; index++)
+                    {
+                        result = result.Replace(theMatches[index].ToString(), theMatches[index].ToString().Replace("\r", "[[[pk:return]]]"));
+                        result = result.Replace(theMatches[index].ToString(), theMatches[index].ToString().Replace("\n", "[[[pk:linefeed]]]"));
+                    }
+                }
+
+                if (result.IndexOf("\r") > 0)
+                {
+                    checkRET = 1;
+
+                    result = result.Replace("\n", "");
+
+                    if (feedType == HtmlLinefeeds.Paragraphs)
+                    {
+                        result = result.Replace("\r", "</p><p>");
+                    }
+
+                    else
+                    {
+                        result = result.Replace("\r", "<br />");
+                    }
+
+                }
+
+                else
+                {
+                    if (result.IndexOf("\n") > 0)
+                    {
+                        checkLF = 1;
+
+                        result = result.Replace("\r", "");
+
+                        if (feedType == HtmlLinefeeds.Paragraphs)
+                        {
+                            result = result.Replace("\n", "</p><p>");
+                        }
+
+                        else
+                        {
+                            result = result.Replace("\n", "<br />");
+                        }
+                    }
+                }
+
+                if (feedType == HtmlLinefeeds.Paragraphs)
+                {
+                    result = "<p>" + result;
+
+                    if (result.Right(3) == "<p>")
+                    {
+                        result = result.Left(result.Length - 3);
+                    }
+
+                    else
+                    {
+                        if (result.IndexOf("</p><p>") > 1)
+                        {
+                            result += "</p>";
+                        }
+                    }
+                }
+
+                if (checkRET == 1)
+                {
+                    result = result.Replace("[[[pk:return]]]", "\r");
+                }
+
+                if (checkLF == 1)
+                {
+                    result = result.Replace("[[[pk:linefeed]]]", "\n");
+                }
             }
 
             return result;
