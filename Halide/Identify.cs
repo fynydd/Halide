@@ -8,7 +8,7 @@ using Fynydd.Halide.Constants;
 
 namespace Fynydd.Halide
 {
-    public static class Identification
+    public static class Identify
     {
         /// <summary>
         /// Determine if a given string matches a 2-letter state abbreviation.

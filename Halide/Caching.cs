@@ -44,7 +44,7 @@ namespace Fynydd.Halide
         {
             get
             {
-                return Configuration.GetKeyValue<int>("OutputCacheTime", 300, "Fynydd.Halide");
+                return Config.GetKeyValue<int>("OutputCacheTime", 300, "Fynydd.Halide");
             }
         }
 

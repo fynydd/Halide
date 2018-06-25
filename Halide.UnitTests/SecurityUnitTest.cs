@@ -19,8 +19,8 @@ namespace Fynydd.Halide.UnitTests
         ulong ulongData = ulong.MaxValue;
         double doubleData = double.MaxValue;
 
-        byte[] baseKey = Security.CreateBaseKey("151, 4, 109, 42, 135, 99, 67, 82, 242, 233, 16, 200, 9, 83, 196, 178, 56, 74, 90, 36, 206, 129, 81, 229, 67, 82, 242, 233, 16, 200, 9, 83");
-        byte[] initVector = Security.CreateInitVector("180, 54, 206, 210, 10, 101, 6, 87, 13, 3, 241, 189, 176, 175, 109, 217");
+        byte[] baseKey = Encryption.CreateBaseKey("151, 4, 109, 42, 135, 99, 67, 82, 242, 233, 16, 200, 9, 83, 196, 178, 56, 74, 90, 36, 206, 129, 81, 229, 67, 82, 242, 233, 16, 200, 9, 83");
+        byte[] initVector = Encryption.CreateInitVector("180, 54, 206, 210, 10, 101, 6, 87, 13, 3, 241, 189, 176, 175, 109, 217");
 
         [TestMethod]
         public void Encrypt()

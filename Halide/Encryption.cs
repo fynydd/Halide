@@ -34,7 +34,7 @@ using Fynydd.Halide.Constants;
 
 namespace Fynydd.Halide
 {
-    public static class Security
+    public static class Encryption
     {
         #region Properties
 
@@ -48,7 +48,7 @@ namespace Fynydd.Halide
         {
             get
             {
-                string key = Configuration.GetKeyValue<string>("EncryptionBaseKey", "", "Fynydd.Halide");
+                string key = Config.GetKeyValue<string>("EncryptionBaseKey", "", "Fynydd.Halide");
 
                 byte[] _basekey1 = CreateBaseKey(key);
 
@@ -66,44 +66,12 @@ namespace Fynydd.Halide
         {
             get
             {
-                string key = Configuration.GetKeyValue<string>("EncryptionInitVector", "", "Fynydd.Halide");
+                string key = Config.GetKeyValue<string>("EncryptionInitVector", "", "Fynydd.Halide");
 
                 byte[] _iv = CreateInitVector(key);
 
                 return _iv;
             }
-        }
-
-        #endregion
-
-        #region Identity
-
-        /// <summary>
-        /// Get the currently logged-in user name (with domain) for the running web page.
-        /// </summary>
-        /// <example>
-        /// <code>
-        /// Response.Write (Security.GetIdentity());
-        /// </code>
-        /// </example>
-        /// <returns>String containing the domain and user name currently logged in via the Impersonation method.</returns>
-        public static string GetIdentity()
-        {
-            return WindowsIdentity.GetCurrent().Name;
-        }
-
-        /// <summary>
-        /// Get the currently logged-in user name (with domain) from the client.
-        /// </summary>
-        /// <example>
-        /// <code>
-        /// Response.Write (Security.GetCurrentUser());
-        /// </code>
-        /// </example>
-        /// <returns>String containing the domain and user name currently logged in via the web browser's authentication dialog.</returns>
-        public static string GetCurrentUser()
-        {
-            return HttpContext.Current.User.Identity.Name.ToString();
         }
 
         #endregion
@@ -371,8 +339,8 @@ namespace Fynydd.Halide
         /// <returns>A BASE64+ encrypted string.</returns>
         public static string Encrypt<T>(this T data)
         {
-            string key = Configuration.GetKeyValue("EncryptionBaseKey", "Fynydd.Halide");
-            string ivec = Configuration.GetKeyValue("EncryptionInitVector", "Fynydd.Halide");
+            string key = Config.GetKeyValue("EncryptionBaseKey", "Fynydd.Halide");
+            string ivec = Config.GetKeyValue("EncryptionInitVector", "Fynydd.Halide");
 
             return Encrypt(data, CreateBaseKey(key), CreateInitVector(ivec));
         }
@@ -406,8 +374,8 @@ namespace Fynydd.Halide
         /// <returns>A decrypted variable</returns>
         public static T Decrypt<T>(this string data)
         {
-            string key = Configuration.GetKeyValue("EncryptionBaseKey", "Fynydd.Halide");
-            string ivec = Configuration.GetKeyValue("EncryptionInitVector", "Fynydd.Halide");
+            string key = Config.GetKeyValue("EncryptionBaseKey", "Fynydd.Halide");
+            string ivec = Config.GetKeyValue("EncryptionInitVector", "Fynydd.Halide");
 
             return Decrypt<T>(data, CreateBaseKey(key), CreateInitVector(ivec));
         }

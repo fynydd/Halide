@@ -9,7 +9,7 @@ using Fynydd.Halide.Constants;
 
 namespace Fynydd.Halide
 {
-    public static class Session
+    public static class AppState
     {
         /// <summary>
         /// Determine if an Application-level state variable exists.

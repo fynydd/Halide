@@ -436,7 +436,7 @@ namespace Fynydd.Halide
                         versions[0] = versions[0].Substring(0, 18);
                     }
 
-                    if (Identification.IsPureNumeric(versions[0]))
+                    if (Identify.IsPureNumeric(versions[0]))
                     {
                         majorVersion = Convert.ToInt64(versions[0]);
                     }
@@ -449,7 +449,7 @@ namespace Fynydd.Halide
                         versions[1] = versions[1].Substring(0, 18);
                     }
 
-                    if (Identification.IsPureNumeric(versions[1]))
+                    if (Identify.IsPureNumeric(versions[1]))
                     {
                         minorVersion = Convert.ToInt64(versions[1]);
                     }
@@ -462,7 +462,7 @@ namespace Fynydd.Halide
                         versions[2] = versions[2].Substring(0, 18);
                     }
 
-                    if (Identification.IsPureNumeric(versions[2]))
+                    if (Identify.IsPureNumeric(versions[2]))
                     {
                         buildVersion = Convert.ToInt64(versions[2]);
                     }

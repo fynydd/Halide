@@ -30,7 +30,7 @@ namespace Fynydd.Halide
     ///	</code>
     ///	</example>
     ///	</summary>
-    public static class Configuration
+    public static class Config
     {
         /// <summary>
         /// Retrieve the value of an application setting from the Web.config file.
