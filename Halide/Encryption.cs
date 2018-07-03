@@ -76,7 +76,7 @@ namespace Fynydd.Halide
 
         #endregion
 
-        #region Encryption
+        #region Key generation
 
         /// <summary>
         /// Converts a comma-separated string of 24 8-bit values and converts it into a Byte array.
@@ -202,6 +202,10 @@ namespace Fynydd.Halide
 
             return result;
         }
+
+        #endregion
+
+        #region Encryption and decryption methods
 
         /// <summary>
         /// AES256 string encryption.
@@ -509,6 +513,10 @@ namespace Fynydd.Halide
             return result;
         }
 
+        #endregion
+
+        #region Hashing and encoding
+
         /// <summary>
         /// MD5 encodes the passed string.
         /// </summary>
@@ -615,7 +623,28 @@ namespace Fynydd.Halide
         /// <returns>A base64+ encoded string.</returns>
         public static string Base64PlusStringEncode(this byte[] input)
         {
-            return Convert.ToBase64String(input).Replace("/", "~").Replace("+", "-").Replace("=", "");
+            var output = Convert.ToBase64String(input);
+
+            output = output.Split('=')[0]; // Remove padding
+            output = output.Replace('+', '-'); // 62nd char of encoding
+            output = output.Replace('/', '_'); // 63rd char of encoding
+
+            return output;
+        }
+
+        /// <summary>
+        /// Base64Url encodes a string (valid in REST URL).
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// string encodedVar = Security.Base64UrlEncode(bytes);
+        /// </code>
+        /// </example>
+        /// <param name="input">A byte array to encode.</param>
+        /// <returns>A Base64Url encoded string.</returns>
+        public static string Base64UrlEncode(this byte[] input)
+        {
+            return Base64PlusStringEncode(input);
         }
 
         /// <summary>
@@ -635,6 +664,21 @@ namespace Fynydd.Halide
         }
 
         /// <summary>
+        /// Base64Url encodes a string (valid in REST URL).
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// string encodedVar = Security.Base64UrlEncode(stringVar);
+        /// </code>
+        /// </example>
+        /// <param name="input">A string to encode.</param>
+        /// <returns>A Base64Url encoded string.</returns>
+        public static string Base64UrlEncode(this string input)
+        {
+            return Base64PlusStringEncode(input);
+        }
+
+        /// <summary>
         /// Base64+ decodes a string (valid in REST URL). Handles missing padding characters.
         /// </summary>
         /// <example>
@@ -646,21 +690,43 @@ namespace Fynydd.Halide
         /// <returns>A decoded byte array.</returns>
         public static byte[] Base64PlusStringDecodeToBytes(this string input)
         {
-            byte[] decbuff = { };
+            var output = input;
 
-            if (!string.IsNullOrEmpty(input))
+            output = output.Replace('-', '+'); // 62nd char of encoding
+            output = output.Replace('_', '/'); // 63rd char of encoding
+
+            switch (output.Length % 4) // Pad with trailing '='s
             {
-                int missing_padding = 4 - input.Length % 4;
-
-                if (missing_padding == 4)
-                {
-                    missing_padding = 0;
-                }
-
-                decbuff = Convert.FromBase64String(input.Replace("~", "/").Replace("-", "+").PadRight(input.Length + missing_padding, '='));
+                case 0:
+                    break; // No padding needed
+                case 2:
+                    output += "==";
+                    break;
+                case 3:
+                    output += "=";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(input), "Invalid Base64Url encoding");
             }
 
-            return decbuff;
+            var converted = Convert.FromBase64String(output);
+
+            return converted;
+        }
+
+        /// <summary>
+        /// Base64Url decodes a string (valid in REST URL). Handles missing padding characters.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// byte[] decodedVar = Security.Base64UrlDecodeToBytes(stringVar);
+        /// </code>
+        /// </example>
+        /// <param name="input">A Base64Url encoded string.</param>
+        /// <returns>A decoded byte array.</returns>
+        public static byte[] Base64UrlDecodeToBytes(this string input)
+        {
+            return Base64PlusStringDecodeToBytes(input);
         }
 
         /// <summary>
@@ -677,6 +743,171 @@ namespace Fynydd.Halide
         {
             byte[] decbuff = Base64PlusStringDecodeToBytes(input);
             return System.Text.Encoding.UTF8.GetString(decbuff);
+        }
+
+        /// <summary>
+        /// Base64Url decodes a string (valid in REST URL). Handles missing padding characters.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// string decodedVar = Security.Base64UrlDecodeToString(stringVar);
+        /// </code>
+        /// </example>
+        /// <param name="input">A Base64Url encoded string.</param>
+        /// <returns>A decoded string.</returns>
+        public static string Base64UrlDecodeToString(this string input)
+        {
+            return Base64PlusStringDecode(input);
+        }
+
+        #endregion
+
+        #region Javascript Web Tokens
+
+        /// <summary>
+        /// Generate a javascript web token (JWT) using hash-based message authentication code (HMAC).
+        /// 
+        /// Use cases:
+        /// 1. Stateless sessions stored in browser cookies
+        /// 2. Email verification codes
+        /// 3. Session IDs with the ability to differentiate between expired and invalid IDs
+        /// 
+        /// Notes:
+        /// 1. The HMAC is not a digital signature!
+        /// 2. Use longer keys / hashes(e.g.HS512) for increased security
+        /// 3. Keys longer than the hash size don’t provide additional security
+        /// 4. Tokens where issuer and ultimate consumer is the same party
+        /// </summary>
+        /// <example>
+        /// In the example, the value for jwt (the token) is:
+        /// eyAiYWxnIjogIkhTMjU2IiwgInR5cCI6ICJKV1QiIH0.eyAic3ViIjogInRlc3QiLCAibmFtZSI6ICJNaWNoYWVsIEFyZ2VudGluaSIgfQ.Gb7z2CJSrWdBhZ7lGZK9qdcac_ktuOuqiCBJo3sG_lA
+        /// <code>
+        /// string base64Secret = Encryption.Base64StringEncode("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@");
+        /// string payload = "{ \"sub\": \"test\", \"name\": \"Michael Argentini\" }";
+        /// string jwt = Encryption.GenerateJWT(payload, base64Secret, "HS256");
+        /// </code>
+        /// </example>
+        /// <param name="payload">Primary data block to pack into the token, using JSON syntax.</param>
+        /// <param name="base64Secret">A 64-byte secret which you have already Base 64 encoded.</param>
+        /// <param name="hashingAlgorithm">HS256, HS384, or HS512.</param>
+        /// <returns>A Base 64 Url-encoded JWT token</returns>
+        public static string GenerateJWT(string payload, string base64Secret, string hashingAlgorithm = "HS256")
+        {
+            string jwt = "";
+            string header = "{ \"alg\": \"" + hashingAlgorithm.ToUpper() + "\", \"typ\": \"JWT\" }";
+            byte[] secretBytes;
+
+            if (string.IsNullOrWhiteSpace(base64Secret) == false)
+            {
+                string secret = Base64StringDecode(base64Secret);
+
+                if (secret.Length == 64)
+                {
+                    secretBytes = secret.ToByteArray();
+
+                    string headerAndPayload = Base64UrlEncode(header) + "." + Base64UrlEncode(payload);
+                    byte[] hashValue = null;
+
+                    if (hashingAlgorithm.ToUpper() == "HS256")
+                    {
+                        using (HMACSHA256 hmac = new HMACSHA256(secretBytes))
+                        {
+                            hashValue = hmac.ComputeHash(headerAndPayload.ToByteArray());
+                        }
+                    }
+
+                    else if (hashingAlgorithm.ToUpper() == "HS384")
+                    {
+                        using (HMACSHA384 hmac = new HMACSHA384(secretBytes))
+                        {
+                            hashValue = hmac.ComputeHash(headerAndPayload.ToByteArray());
+                        }
+                    }
+
+                    else if (hashingAlgorithm.ToUpper() == "HS512")
+                    {
+                        using (HMACSHA512 hmac = new HMACSHA512(secretBytes))
+                        {
+                            hashValue = hmac.ComputeHash(headerAndPayload.ToByteArray());
+                        }
+                    }
+
+                    if (hashValue != null)
+                    {
+                        jwt = headerAndPayload + "." + Base64UrlEncode(hashValue);
+                    }
+                }
+            }
+
+            return jwt;
+        }
+
+        /// <summary>
+        /// Verify a javascript web token (JWT) which uses hash-based message authentication code (HMAC).
+        /// Hashing algorithm is determined automatically from the header of the token.
+        /// 
+        /// Use cases:
+        /// 1. Stateless sessions stored in browser cookies
+        /// 2. Email verification codes
+        /// 3. Session IDs with the ability to differentiate between expired and invalid IDs
+        /// 
+        /// Notes:
+        /// 1. The HMAC is not a digital signature!
+        /// 2. Use longer keys / hashes(e.g.HS512) for increased security
+        /// 3. Keys longer than the hash size don’t provide additional security
+        /// 4. Tokens where issuer and ultimate consumer is the same party
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// string base64Secret = Encryption.Base64StringEncode("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@");
+        /// string payload = "{ \"sub\": \"test\", \"name\": \"Michael Argentini\" }";
+        /// string jwt = Encryption.GenerateJWT(payload, base64Secret, "HS256");
+        /// if (Encryption.VerifyJWT(jwt, base64Secret))
+        /// {
+        ///     // token has a valid signature...
+        /// }
+        /// </code>
+        /// </example>
+        /// <param name="jwt">Javascript Web Token</param>
+        /// <param name="base64Secret">A 64-byte secret which you have already Base 64 encoded</param>
+        /// <returns>true if the signature is valid, false if not</returns>
+        public static bool VerifyJWT(string jwt, string base64Secret)
+        {
+            bool result = false;
+
+            if (string.IsNullOrWhiteSpace(base64Secret) == false)
+            {
+                if (string.IsNullOrWhiteSpace(jwt) == false)
+                {
+                    string[] portions = jwt.Split('.');
+
+                    if (portions.Length > 2)
+                    {
+                        string header = portions[0];
+                        string headerDecoded = Base64UrlDecodeToString(header).ToUpper().Replace(" ", "");
+                        string payload = portions[1];
+                        string signature = portions[2];
+                        string hashAlgorithm = "HS256";
+
+                        if (headerDecoded.Contains("\"ALG\":\"HS384\""))
+                        {
+                            hashAlgorithm = "HS384";
+                        }
+
+                        else if (headerDecoded.Contains("\"ALG\":\"HS512\""))
+                        {
+                            hashAlgorithm = "HS512";
+                        }
+
+                        if (GenerateJWT(Base64UrlDecodeToString(payload), base64Secret, hashAlgorithm) == jwt)
+                        {
+                            result = true;
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
 
         #endregion
