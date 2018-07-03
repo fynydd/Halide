@@ -52,7 +52,7 @@
     <Compile Include="IdentificationUnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TemporalUnitTests.cs" />
-    <Compile Include="SecurityUnitTest.cs" />
+    <Compile Include="EncryptionUnitTest.cs" />
     <Compile Include="CompressionUnitTests.cs" />
   </ItemGroup>
   <ItemGroup>

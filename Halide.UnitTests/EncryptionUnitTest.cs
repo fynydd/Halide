@@ -10,7 +10,7 @@ namespace Fynydd.Halide.UnitTests
     /// Summary description for IdentificationUnitTests
     /// </summary>
     [TestClass]
-    public class SecurityUnitTests
+    public class EncryptionUnitTests
     {
         string stringData = "Now is the time for all good men to come to the aid of their party.";
         DateTime dateTimeData = new DateTime(2018, 06, 01, 20, 09, 10);
@@ -26,7 +26,7 @@ namespace Fynydd.Halide.UnitTests
         public void Encrypt()
         {
             string encrypted = stringData.Encrypt<string>(baseKey, initVector);
-            Assert.AreEqual("nnxyz91rqBjVkHr39sXhuE~xq92SuMLmesW0frDM6nLNclhtuvPvmSoudINJ5INwZymg6M9eYYPNn22P1Iis3TiDMpnPGw9QTSTVXdomJ3g", encrypted);
+            Assert.AreEqual("nnxyz91rqBjVkHr39sXhuE_xq92SuMLmesW0frDM6nLNclhtuvPvmSoudINJ5INwZymg6M9eYYPNn22P1Iis3TiDMpnPGw9QTSTVXdomJ3g", encrypted);
 
             string decryptedString = encrypted.Decrypt<string>(baseKey, initVector);
             Assert.AreEqual(stringData, decryptedString);

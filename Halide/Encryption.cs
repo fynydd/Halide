@@ -32,6 +32,8 @@ using System.Xml;
 
 using Fynydd.Halide.Constants;
 
+using Newtonsoft.Json.Linq;
+
 namespace Fynydd.Halide
 {
     public static class Encryption
@@ -766,6 +768,7 @@ namespace Fynydd.Halide
 
         /// <summary>
         /// Generate a javascript web token (JWT) using hash-based message authentication code (HMAC).
+        /// Supports HS256, HS384, and HS512 hashing algorithms.
         /// 
         /// Use cases:
         /// 1. Stateless sessions stored in browser cookies
@@ -845,6 +848,7 @@ namespace Fynydd.Halide
         /// <summary>
         /// Verify a javascript web token (JWT) which uses hash-based message authentication code (HMAC).
         /// Hashing algorithm is determined automatically from the header of the token.
+        /// Supports HS256, HS384, and HS512 hashing algorithms.
         /// 
         /// Use cases:
         /// 1. Stateless sessions stored in browser cookies
@@ -887,16 +891,13 @@ namespace Fynydd.Halide
                         string headerDecoded = Base64UrlDecodeToString(header).ToUpper().Replace(" ", "");
                         string payload = portions[1];
                         string signature = portions[2];
-                        string hashAlgorithm = "HS256";
+                        string hashAlgorithm = "";
 
-                        if (headerDecoded.Contains("\"ALG\":\"HS384\""))
-                        {
-                            hashAlgorithm = "HS384";
-                        }
+                        hashAlgorithm = JObject.Parse(headerDecoded)["ALG"].ToString();
 
-                        else if (headerDecoded.Contains("\"ALG\":\"HS512\""))
+                        if (string.IsNullOrWhiteSpace(hashAlgorithm))
                         {
-                            hashAlgorithm = "HS512";
+                            hashAlgorithm = "HS256";
                         }
 
                         if (GenerateJWT(Base64UrlDecodeToString(payload), base64Secret, hashAlgorithm) == jwt)
