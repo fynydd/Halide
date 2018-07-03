@@ -14,7 +14,7 @@
         $description$ Halide includes extension methods for manipulating base types (like strings, byte arrays, numerics), and static helper classes for HTTP and REST helpers, SQL data readers, security and encryption, file compression, SCSS compilation, CSS and JavaScript minification, and more. Halide requires no commercial third party components. You have all the source code, an MIT license, sunshine, and puppies.
     </description>
     <summary>$description$</summary>
-    <releaseNotes>Added Newtonsoft.Json dependency, Javascript Web Token generation and validation.</releaseNotes>
+    <releaseNotes>Added Newtonsoft.Json dependency, Javascript Web Token generation and validation, refactored Base64Plus methods, added Base64Url encode/decode methods.</releaseNotes>
     <copyright>$copyright$</copyright>
     <tags>halide aspnet mvc csharp utilities scss</tags>
     <packageTypes>
