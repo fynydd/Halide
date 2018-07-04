@@ -87,26 +87,30 @@ namespace Fynydd.Halide.UnitTests
         [TestMethod]
         public void JWT()
         {
-            string payload = "{ \"sub\": \"test\", \"name\": \"Michael Argentini\" }";
+            string payload = 
+@"{
+    ""sub"": ""test"",
+    ""name"": ""Michael Argentini""
+}";
             string jwt = "";
 
             // HS256
             jwt = Encryption.GenerateJWT(payload, Secret64bit);
-            Assert.AreEqual("eyAiYWxnIjogIkhTMjU2IiwgInR5cCI6ICJKV1QiIH0.eyAic3ViIjogInRlc3QiLCAibmFtZSI6ICJNaWNoYWVsIEFyZ2VudGluaSIgfQ.Gb7z2CJSrWdBhZ7lGZK9qdcac_ktuOuqiCBJo3sG_lA", jwt, "HS256 failure");
+            Assert.AreEqual("eyAiYWxnIjogIkhTMjU2IiwgInR5cCI6ICJKV1QiIH0.ew0KICAgICJzdWIiOiAidGVzdCIsDQogICAgIm5hbWUiOiAiTWljaGFlbCBBcmdlbnRpbmkiDQp9.yI0e3K3m4FdQWVTnPOmH53v712fxGI0rIG4B5YsLyCA", jwt, "HS256 failure");
 
             // Verify HS256
             Assert.AreEqual(true, Encryption.VerifyJWT(jwt, Secret64bit), "HS256 signature verification failure");
 
             // HS384
             jwt = Encryption.GenerateJWT(payload, Secret128bit, "HS384");
-            Assert.AreEqual("eyAiYWxnIjogIkhTMzg0IiwgInR5cCI6ICJKV1QiIH0.eyAic3ViIjogInRlc3QiLCAibmFtZSI6ICJNaWNoYWVsIEFyZ2VudGluaSIgfQ._XH-P-UL3uLJBDV0x2K97ulz8TRUEFy8EwRyA8oCUbdJk7gVASC7WywGtqZCdw2C", jwt, "HS384 failure");
+            Assert.AreEqual("eyAiYWxnIjogIkhTMzg0IiwgInR5cCI6ICJKV1QiIH0.ew0KICAgICJzdWIiOiAidGVzdCIsDQogICAgIm5hbWUiOiAiTWljaGFlbCBBcmdlbnRpbmkiDQp9.grBXlNZ7DK0eABt99IPP8dqv9IQqTgBJssL66R-IoDSJrUV5_6WvPhr7QJrBZv7a", jwt, "HS384 failure");
 
             // Verify HS384
             Assert.AreEqual(true, Encryption.VerifyJWT(jwt, Secret128bit), "HS384 signature verification failure");
 
             // HS512
             jwt = Encryption.GenerateJWT(payload, Secret128bit, "HS512");
-            Assert.AreEqual("eyAiYWxnIjogIkhTNTEyIiwgInR5cCI6ICJKV1QiIH0.eyAic3ViIjogInRlc3QiLCAibmFtZSI6ICJNaWNoYWVsIEFyZ2VudGluaSIgfQ.NZus5Z-v0bhZUu-FaNZEQYSa4h3wC3SmmDT7lL9om1q3-YNr3Pk_sR2m1vP5N-awhByrm6W-8O3r-Qpd5vQPUw", jwt, "HS512 failure");
+            Assert.AreEqual("eyAiYWxnIjogIkhTNTEyIiwgInR5cCI6ICJKV1QiIH0.ew0KICAgICJzdWIiOiAidGVzdCIsDQogICAgIm5hbWUiOiAiTWljaGFlbCBBcmdlbnRpbmkiDQp9.rgKRqZHGQkhInN-uwhd_KXNIWBA6-arN9WcjL2l6sTDLLDieMA2MpHc7JbCXEsuCnjBnabewmUD25Z_jDGkvfQ", jwt, "HS512 failure");
 
             // Verify HS512
             Assert.AreEqual(true, Encryption.VerifyJWT(jwt, Secret128bit), "HS512 signature verification failure");
