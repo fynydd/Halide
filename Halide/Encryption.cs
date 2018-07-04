@@ -8,6 +8,7 @@ using System.Data.OleDb;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Net.Mail;
@@ -115,7 +116,7 @@ namespace Fynydd.Halide
 
             catch (Exception err)
             {
-                throw new Exception("Halide.Security Error: " + err.ToString());
+                throw new Exception("Halide.Encryption Error: " + err.ToString());
             }
 
             return result;
@@ -156,7 +157,7 @@ namespace Fynydd.Halide
 
             catch (Exception err)
             {
-                throw new Exception("Halide.Security Error: " + err.ToString());
+                throw new Exception("Halide.Encryption Error: " + err.ToString());
             }
 
             return result;
@@ -198,7 +199,7 @@ namespace Fynydd.Halide
 
                 catch (Exception err)
                 {
-                    throw new Exception("Halide.Security Error: " + err.ToString());
+                    throw new Exception("Halide.Encryption Error: " + err.ToString());
                 }
             }
 
@@ -310,7 +311,7 @@ namespace Fynydd.Halide
 
             catch (Exception err)
             {
-                throw new Exception("Halide.Security Error: " + err.ToString());
+                throw new Exception("Halide.Encryption Error: " + err.ToString());
             }
 
             return result;
@@ -590,7 +591,7 @@ namespace Fynydd.Halide
         /// </code>
         /// </example>
         /// <param name="input">A string to encode.</param>
-        /// <returns>A base64 encoded string.</returns>
+        /// <returns>A Base64-encoded string.</returns>
         public static string Base64StringEncode(this string input)
         {
             byte[] encbuff = System.Text.Encoding.UTF8.GetBytes(input);
@@ -605,12 +606,27 @@ namespace Fynydd.Halide
         /// string decodedVar = Security.Base64StringDecode(stringVar);
         /// </code>
         /// </example>
-        /// <param name="input">A base64 encoded string.</param>
+        /// <param name="input">A Base64-encoded string.</param>
         /// <returns>A decoded string.</returns>
         public static string Base64StringDecode(this string input)
         {
             byte[] decbuff = Convert.FromBase64String(input);
             return System.Text.Encoding.UTF8.GetString(decbuff);
+        }
+
+        /// <summary>
+        /// Base64 decodes a string to a byte array.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// byte[] decodedVar = Security.Base64DecodeToBytes(stringVar);
+        /// </code>
+        /// </example>
+        /// <param name="input">A Base64-encoded string.</param>
+        /// <returns>A decoded byte array.</returns>
+        public static byte[] Base64DecodeToBytes(this string input)
+        {
+            return Convert.FromBase64String(input);
         }
 
         /// <summary>
@@ -622,7 +638,7 @@ namespace Fynydd.Halide
         /// </code>
         /// </example>
         /// <param name="input">A byte array to encode.</param>
-        /// <returns>A base64+ encoded string.</returns>
+        /// <returns>A Base64Plus-encoded string.</returns>
         public static string Base64PlusStringEncode(this byte[] input)
         {
             var output = Convert.ToBase64String(input);
@@ -643,7 +659,7 @@ namespace Fynydd.Halide
         /// </code>
         /// </example>
         /// <param name="input">A byte array to encode.</param>
-        /// <returns>A Base64Url encoded string.</returns>
+        /// <returns>A Base64Url-encoded string.</returns>
         public static string Base64UrlEncode(this byte[] input)
         {
             return Base64PlusStringEncode(input);
@@ -658,7 +674,7 @@ namespace Fynydd.Halide
         /// </code>
         /// </example>
         /// <param name="input">A string to encode.</param>
-        /// <returns>A base64+ encoded string.</returns>
+        /// <returns>A Base64Plus-encoded string.</returns>
         public static string Base64PlusStringEncode(this string input)
         {
             byte[] encbuff = System.Text.Encoding.UTF8.GetBytes(input);
@@ -674,7 +690,7 @@ namespace Fynydd.Halide
         /// </code>
         /// </example>
         /// <param name="input">A string to encode.</param>
-        /// <returns>A Base64Url encoded string.</returns>
+        /// <returns>A Base64Url-encoded string.</returns>
         public static string Base64UrlEncode(this string input)
         {
             return Base64PlusStringEncode(input);
@@ -688,7 +704,7 @@ namespace Fynydd.Halide
         /// byte[] decodedVar = Security.Base64PlusStringDecodeToBytes(stringVar);
         /// </code>
         /// </example>
-        /// <param name="input">A base64+ encoded string.</param>
+        /// <param name="input">A Base64Plus-encoded string.</param>
         /// <returns>A decoded byte array.</returns>
         public static byte[] Base64PlusStringDecodeToBytes(this string input)
         {
@@ -708,7 +724,7 @@ namespace Fynydd.Halide
                     output += "=";
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(input), "Invalid Base64Url encoding");
+                    throw new ArgumentOutOfRangeException(nameof(input), "Halide.Encryption Error: Invalid Base64Url encoding");
             }
 
             var converted = Convert.FromBase64String(output);
@@ -724,7 +740,7 @@ namespace Fynydd.Halide
         /// byte[] decodedVar = Security.Base64UrlDecodeToBytes(stringVar);
         /// </code>
         /// </example>
-        /// <param name="input">A Base64Url encoded string.</param>
+        /// <param name="input">A Base64Url-encoded string.</param>
         /// <returns>A decoded byte array.</returns>
         public static byte[] Base64UrlDecodeToBytes(this string input)
         {
@@ -739,7 +755,7 @@ namespace Fynydd.Halide
         /// string decodedVar = Security.Base64PlusStringDecode(stringVar);
         /// </code>
         /// </example>
-        /// <param name="input">A base64+ encoded string.</param>
+        /// <param name="input">A Base64Plus-encoded string.</param>
         /// <returns>A decoded string.</returns>
         public static string Base64PlusStringDecode(this string input)
         {
@@ -755,7 +771,7 @@ namespace Fynydd.Halide
         /// string decodedVar = Security.Base64UrlDecodeToString(stringVar);
         /// </code>
         /// </example>
-        /// <param name="input">A Base64Url encoded string.</param>
+        /// <param name="input">A Base64Url-encoded string.</param>
         /// <returns>A decoded string.</returns>
         public static string Base64UrlDecodeToString(this string input)
         {
@@ -791,55 +807,91 @@ namespace Fynydd.Halide
         /// </code>
         /// </example>
         /// <param name="payload">Primary data block to pack into the token, using JSON syntax.</param>
-        /// <param name="base64Secret">A 64-byte secret which you have already Base 64 encoded.</param>
+        /// <param name="base64Secret">A secret which you have already Base64-encoded. HS256 uses 64-byte secrets. HS384 and HS512 use 128-byte secrets.</param>
         /// <param name="hashingAlgorithm">HS256, HS384, or HS512.</param>
-        /// <returns>A Base 64 Url-encoded JWT token</returns>
+        /// <returns>A Base64Url-encoded JWT token</returns>
         public static string GenerateJWT(string payload, string base64Secret, string hashingAlgorithm = "HS256")
         {
             string jwt = "";
-            string header = "{ \"alg\": \"" + hashingAlgorithm.ToUpper() + "\", \"typ\": \"JWT\" }";
-            byte[] secretBytes;
 
-            if (string.IsNullOrWhiteSpace(base64Secret) == false)
+            try
             {
-                string secret = Base64StringDecode(base64Secret);
-
-                if (secret.Length == 64)
+                if (string.IsNullOrWhiteSpace(base64Secret) == false)
                 {
-                    secretBytes = secret.ToByteArray();
+                    string header = "{ \"alg\": \"" + hashingAlgorithm.ToUpper() + "\", \"typ\": \"JWT\" }";
+                    byte[] secretBytes = Base64DecodeToBytes(base64Secret);
 
-                    string headerAndPayload = Base64UrlEncode(header) + "." + Base64UrlEncode(payload);
-                    byte[] hashValue = null;
-
-                    if (hashingAlgorithm.ToUpper() == "HS256")
+                    if (secretBytes.Length >= 64)
                     {
-                        using (HMACSHA256 hmac = new HMACSHA256(secretBytes))
+                        string headerAndPayload = Base64UrlEncode(header) + "." + Base64UrlEncode(payload);
+                        byte[] hashValue = null;
+
+                        if (hashingAlgorithm.ToUpper() == "HS256")
                         {
-                            hashValue = hmac.ComputeHash(headerAndPayload.ToByteArray());
+                            using (HMACSHA256 hmac = new HMACSHA256(secretBytes))
+                            {
+                                hashValue = hmac.ComputeHash(headerAndPayload.ToByteArray());
+                            }
+                        }
+
+                        else if (hashingAlgorithm.ToUpper() == "HS384")
+                        {
+                            if (secretBytes.Length >= 128)
+                            {
+                                using (HMACSHA384 hmac = new HMACSHA384(secretBytes))
+                                {
+                                    hashValue = hmac.ComputeHash(headerAndPayload.ToByteArray());
+                                }
+                            }
+
+                            else
+                            {
+                                throw new Exception("Secret less than 128 bytes");
+                            }
+                        }
+
+                        else if (hashingAlgorithm.ToUpper() == "HS512")
+                        {
+                            if (secretBytes.Length >= 128)
+                            {
+                                using (HMACSHA512 hmac = new HMACSHA512(secretBytes))
+                                {
+                                    hashValue = hmac.ComputeHash(headerAndPayload.ToByteArray());
+                                }
+                            }
+
+                            else
+                            {
+                                throw new Exception("Secret less than 128 bytes");
+                            }
+                        }
+
+                        if (hashValue != null)
+                        {
+                            jwt = headerAndPayload + "." + Base64UrlEncode(hashValue);
+                        }
+
+                        else
+                        {
+                            throw new Exception("Hash value not generated, likely incorrect algorithm specified");
                         }
                     }
 
-                    else if (hashingAlgorithm.ToUpper() == "HS384")
+                    else
                     {
-                        using (HMACSHA384 hmac = new HMACSHA384(secretBytes))
-                        {
-                            hashValue = hmac.ComputeHash(headerAndPayload.ToByteArray());
-                        }
-                    }
-
-                    else if (hashingAlgorithm.ToUpper() == "HS512")
-                    {
-                        using (HMACSHA512 hmac = new HMACSHA512(secretBytes))
-                        {
-                            hashValue = hmac.ComputeHash(headerAndPayload.ToByteArray());
-                        }
-                    }
-
-                    if (hashValue != null)
-                    {
-                        jwt = headerAndPayload + "." + Base64UrlEncode(hashValue);
+                        throw new Exception("Secret length less than 64 bytes");
                     }
                 }
+
+                else
+                {
+                    throw new Exception("Base64-encoded secret is empty");
+                }
+            }
+
+            catch (Exception err)
+            {
+                Debug.WriteLine("Halide.Encryption Error (Generate JWT): " + err.Message);
             }
 
             return jwt;
@@ -873,39 +925,62 @@ namespace Fynydd.Halide
         /// </code>
         /// </example>
         /// <param name="jwt">Javascript Web Token</param>
-        /// <param name="base64Secret">A 64-byte secret which you have already Base 64 encoded</param>
+        /// <param name="base64Secret">A secret which you have already Base64-encoded. HS256 uses 64-byte secrets. HS384 and HS512 use 128-byte secrets.</param>
         /// <returns>true if the signature is valid, false if not</returns>
         public static bool VerifyJWT(string jwt, string base64Secret)
         {
             bool result = false;
 
-            if (string.IsNullOrWhiteSpace(base64Secret) == false)
+            try
             {
-                if (string.IsNullOrWhiteSpace(jwt) == false)
+                if (string.IsNullOrWhiteSpace(base64Secret) == false)
                 {
-                    string[] portions = jwt.Split('.');
-
-                    if (portions.Length > 2)
+                    if (string.IsNullOrWhiteSpace(jwt) == false)
                     {
-                        string header = portions[0];
-                        string headerDecoded = Base64UrlDecodeToString(header).ToUpper().Replace(" ", "");
-                        string payload = portions[1];
-                        string signature = portions[2];
-                        string hashAlgorithm = "";
+                        string[] portions = jwt.Split('.');
 
-                        hashAlgorithm = JObject.Parse(headerDecoded)["ALG"].ToString();
-
-                        if (string.IsNullOrWhiteSpace(hashAlgorithm))
+                        if (portions.Length > 2)
                         {
-                            hashAlgorithm = "HS256";
+                            string header = portions[0];
+                            string headerDecoded = Base64UrlDecodeToString(header).ToUpper().Replace(" ", "");
+                            string payload = portions[1];
+                            string signature = portions[2];
+                            string hashAlgorithm = "";
+
+                            hashAlgorithm = JObject.Parse(headerDecoded)["ALG"].ToString();
+
+                            if (string.IsNullOrWhiteSpace(hashAlgorithm))
+                            {
+                                hashAlgorithm = "HS256";
+                            }
+
+                            if (GenerateJWT(Base64UrlDecodeToString(payload), base64Secret, hashAlgorithm) == jwt)
+                            {
+                                result = true;
+                            }
                         }
 
-                        if (GenerateJWT(Base64UrlDecodeToString(payload), base64Secret, hashAlgorithm) == jwt)
+                        else
                         {
-                            result = true;
+                            throw new Exception("Javascript Web Token (JWT) not properly period-delimitted");
                         }
                     }
+
+                    else
+                    {
+                        throw new Exception("Javascript Web Token (JWT) is empty");
+                    }
                 }
+
+                else
+                {
+                    throw new Exception("Base64-encoded secret is empty");
+                }
+            }
+
+            catch (Exception err)
+            {
+                Debug.WriteLine("Halide.Encryption Error (Verify JWT): " + err.Message);
             }
 
             return result;
