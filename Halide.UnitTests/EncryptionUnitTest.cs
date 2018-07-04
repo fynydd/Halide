@@ -29,45 +29,45 @@ namespace Fynydd.Halide.UnitTests
         public void Encrypt()
         {
             string encrypted = stringData.Encrypt<string>(baseKey, initVector);
-            Assert.AreEqual("nnxyz91rqBjVkHr39sXhuE_xq92SuMLmesW0frDM6nLNclhtuvPvmSoudINJ5INwZymg6M9eYYPNn22P1Iis3TiDMpnPGw9QTSTVXdomJ3g", encrypted);
+            Assert.AreEqual("nnxyz91rqBjVkHr39sXhuE_xq92SuMLmesW0frDM6nLNclhtuvPvmSoudINJ5INwZymg6M9eYYPNn22P1Iis3TiDMpnPGw9QTSTVXdomJ3g", encrypted, "stringData encryption error");
 
             string decryptedString = encrypted.Decrypt<string>(baseKey, initVector);
-            Assert.AreEqual(stringData, decryptedString);
+            Assert.AreEqual(stringData, decryptedString, "stringData decryption error");
 
 
             encrypted = dateTimeData.Encrypt(baseKey, initVector);
-            Assert.AreEqual("IpBUnBFx5fMKeM5sSyaS1xaPwWC4wEibRSgQOjK930Y", encrypted);
+            Assert.AreEqual("IpBUnBFx5fMKeM5sSyaS1xaPwWC4wEibRSgQOjK930Y", encrypted, "dateTimeData encryption error");
 
             DateTime decryptedDateTime = encrypted.Decrypt<DateTime>(baseKey, initVector);
-            Assert.AreEqual(dateTimeData, decryptedDateTime);
+            Assert.AreEqual(dateTimeData, decryptedDateTime, "dateTimeData decryption error");
 
 
             encrypted = intData.Encrypt(baseKey, initVector);
-            Assert.AreEqual("X23XSLQDr1o8oq8xL-N39Q", encrypted);
+            Assert.AreEqual("X23XSLQDr1o8oq8xL-N39Q", encrypted, "intData encryption error");
 
             int decryptedInt = encrypted.Decrypt<int>(baseKey, initVector);
-            Assert.AreEqual(intData, decryptedInt);
+            Assert.AreEqual(intData, decryptedInt, "intData decryption error");
 
 
             encrypted = longData.Encrypt(baseKey, initVector);
-            Assert.AreEqual("Mhrerm4zQYoNhTmUa6OnnQ", encrypted);
+            Assert.AreEqual("Mhrerm4zQYoNhTmUa6OnnQ", encrypted, "longData encryption error");
 
             long decryptedLong = encrypted.Decrypt<long>(baseKey, initVector);
-            Assert.AreEqual(longData, decryptedLong);
+            Assert.AreEqual(longData, decryptedLong, "longData decryption error");
 
 
             encrypted = ulongData.Encrypt(baseKey, initVector);
-            Assert.AreEqual("d7gg-s0DzZbLNPtoO49BZQ", encrypted);
+            Assert.AreEqual("d7gg-s0DzZbLNPtoO49BZQ", encrypted, "ulongData encryption error");
 
             ulong decryptedULong = encrypted.Decrypt<ulong>(baseKey, initVector);
-            Assert.AreEqual(ulongData, decryptedULong);
+            Assert.AreEqual(ulongData, decryptedULong, "ulongData decryption error");
 
 
             encrypted = doubleData.Encrypt(baseKey, initVector);
-            Assert.AreEqual("lvZd7REGsrCrMuHntjnptA", encrypted);
+            Assert.AreEqual("lvZd7REGsrCrMuHntjnptA", encrypted, "doubleData encryption error");
 
             double decryptedDouble = encrypted.Decrypt<double>(baseKey, initVector);
-            Assert.AreEqual(doubleData, decryptedDouble);
+            Assert.AreEqual(doubleData, decryptedDouble, "doubleData decryption error");
         }
 
         [TestMethod]
