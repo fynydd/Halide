@@ -1,37 +1,8 @@
 ﻿using System;
-using System.Configuration;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
-using System.Data.OleDb;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Diagnostics;
-using System.Globalization;
-using System.Net;
-using System.Net.Mail;
-using System.Net.Mime;
 using System.IO;
-using System.IO.Compression;
-using System.Runtime.InteropServices;
-using System.Security;
 using System.Security.Cryptography;
-using System.Security.Principal;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Timers;
-using System.Web;
-using System.Web.Mail;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using System.Xml;
-
-using Fynydd.Halide.Constants;
 
 using Newtonsoft.Json.Linq;
 
