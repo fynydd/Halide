@@ -1,7 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using Fynydd.Halide;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fynydd.Halide.UnitTests
 {

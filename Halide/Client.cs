@@ -5,8 +5,6 @@ using System.Web.Mvc;
 
 using Yahoo.Yui.Compressor;
 
-using Fynydd.Halide.Constants;
-
 namespace Fynydd.Halide
 {
     /// <summary>

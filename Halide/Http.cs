@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Web;
-using System.Web.Mvc;
-
-using Yahoo.Yui.Compressor;
 
 using Fynydd.Halide.Constants;
 using System.Net;
 using System.IO;
-using System.Web.UI;
 
 namespace Fynydd.Halide
 {

@@ -5,8 +5,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 
-using Fynydd.Halide.Constants;
-
 namespace Fynydd.Halide
 {
     /// <summary>

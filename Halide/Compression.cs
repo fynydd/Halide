@@ -3,8 +3,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 
-using Fynydd.Halide.Constants;
-
 namespace Fynydd.Halide
 {
     /// <summary>

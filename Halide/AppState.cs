@@ -1,11 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Web;
-using System.Web.Mvc;
-
-using Yahoo.Yui.Compressor;
-
-using Fynydd.Halide.Constants;
+﻿using System.Web;
 
 namespace Fynydd.Halide
 {

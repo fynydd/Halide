@@ -6,9 +6,6 @@ using System.Data.SqlClient;
 using System.Reflection;
 using System.Text;
 
-using Fynydd.Halide;
-using Fynydd.Halide.Constants;
-
 namespace Fynydd.Halide
 {
     /// <summary>

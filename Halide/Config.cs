@@ -4,8 +4,6 @@ using System.Collections.Specialized;
 using System.Configuration;
 using System.Xml;
 
-using Fynydd.Halide.Constants;
-
 namespace Fynydd.Halide
 {
     /// <summary>
