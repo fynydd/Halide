@@ -71,6 +71,21 @@ namespace Fynydd.Halide.UnitTests
         }
 
         [TestMethod]
+        public void Base64()
+        {
+            string source = "Fynydd.Halide R0CKS!";
+            string encoded = Encryption.Base64StringEncode(source);
+
+            Assert.AreEqual("RnlueWRkLkhhbGlkZSBSMENLUyE=", encoded, "Base64 string encode failure");
+            Assert.AreEqual(source, Encryption.Base64StringDecode(encoded), "Base64 string decode failure");
+
+            encoded = Encryption.Base64UrlEncode(source);
+
+            Assert.AreEqual("RnlueWRkLkhhbGlkZSBSMENLUyE", encoded, "Base64Url encode failure");
+            Assert.AreEqual(source, Encryption.Base64UrlDecodeToString(encoded), "Base64Url decode failure");
+        }
+
+        [TestMethod]
         public void JWT()
         {
             string payload = "{ \"sub\": \"test\", \"name\": \"Michael Argentini\" }";
