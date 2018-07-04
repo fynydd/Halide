@@ -85,6 +85,15 @@ namespace Fynydd.Halide.UnitTests
         }
 
         [TestMethod]
+        public void MD5()
+        {
+            string hash = Encryption.MD5String(stringData);
+
+            Assert.AreEqual("638037563d9fefa942b864600edbac6b", hash, "MD5 string hashing failure");
+            Assert.AreEqual(true, Encryption.MD5VerifyString(stringData, hash), "MD5 string hash verification failure");
+        }
+
+        [TestMethod]
         public void JWT()
         {
             string payload = 
