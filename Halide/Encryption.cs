@@ -305,7 +305,7 @@ namespace Fynydd.Halide
 
                     cryptStream.Close();
 
-                    result = Base64PlusStringEncode(bytes);
+                    result = Base64UrlEncode(bytes);
                 }
             }
 
@@ -415,7 +415,7 @@ namespace Fynydd.Halide
 
             try
             {
-                byte[] inputInBytes = Base64PlusStringDecodeToBytes(newData);
+                byte[] inputInBytes = Base64UrlDecodeToBytes(newData);
                 CryptoStream cryptStream = new CryptoStream(decryptedStream, cryptoTransform, CryptoStreamMode.Write);
 
                 cryptStream.Write(inputInBytes, 0, inputInBytes.Length);
@@ -605,14 +605,31 @@ namespace Fynydd.Halide
         /// </example>
         /// <param name="input">A string to encode.</param>
         /// <returns>A Base64-encoded string.</returns>
-        public static string Base64StringEncode(this string input)
+        public static string Base64Encode(this string input)
+        {
+            return Base64Encode(System.Text.Encoding.UTF8.GetBytes(input));
+        }
+
+        /// <summary>
+        /// Base64 encodes a byte array.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// string encodedVar = Security.Base64Encode(bytes);
+        /// </code>
+        /// </example>
+        /// <param name="input">A byte array to encode.</param>
+        /// <returns>A Base64-encoded string.</returns>
+        public static string Base64Encode(this byte[] input)
         {
             string result = "";
 
-            if (string.IsNullOrWhiteSpace(input) == false)
+            if (input != null)
             {
-                byte[] encbuff = System.Text.Encoding.UTF8.GetBytes(input);
-                result = Convert.ToBase64String(encbuff);
+                if (input.Length > 0)
+                {
+                    result = Convert.ToBase64String(input);
+                }
             }
 
             return result;
@@ -623,12 +640,12 @@ namespace Fynydd.Halide
         /// </summary>
         /// <example>
         /// <code>
-        /// string decodedVar = Security.Base64StringDecode(stringVar);
+        /// string decodedVar = Security.Base64DecodeToString(stringVar);
         /// </code>
         /// </example>
         /// <param name="input">A Base64-encoded string.</param>
         /// <returns>A decoded string.</returns>
-        public static string Base64StringDecode(this string input)
+        public static string Base64DecodeToString(this string input)
         {
             string result = "";
 
@@ -664,16 +681,16 @@ namespace Fynydd.Halide
         }
 
         /// <summary>
-        /// Base64+ encodes a string (valid in REST URL).
+        /// Base64Url-encodes a string.
         /// </summary>
         /// <example>
         /// <code>
-        /// string encodedVar = Security.Base64PlusStringEncode(bytes);
+        /// string encodedVar = Security.Base64UrlEncode(bytes);
         /// </code>
         /// </example>
         /// <param name="input">A byte array to encode.</param>
-        /// <returns>A Base64Plus-encoded string.</returns>
-        public static string Base64PlusStringEncode(this byte[] input)
+        /// <returns>A Base64Url-encoded string.</returns>
+        public static string Base64UrlEncode(this byte[] input)
         {
             string result = "";
 
@@ -696,45 +713,7 @@ namespace Fynydd.Halide
         }
 
         /// <summary>
-        /// Base64Url encodes a string (valid in REST URL).
-        /// </summary>
-        /// <example>
-        /// <code>
-        /// string encodedVar = Security.Base64UrlEncode(bytes);
-        /// </code>
-        /// </example>
-        /// <param name="input">A byte array to encode.</param>
-        /// <returns>A Base64Url-encoded string.</returns>
-        public static string Base64UrlEncode(this byte[] input)
-        {
-            return Base64PlusStringEncode(input);
-        }
-
-        /// <summary>
-        /// Base64+ encodes a string (valid in REST URL).
-        /// </summary>
-        /// <example>
-        /// <code>
-        /// string encodedVar = Security.Base64PlusStringEncode(stringVar);
-        /// </code>
-        /// </example>
-        /// <param name="input">A string to encode.</param>
-        /// <returns>A Base64Plus-encoded string.</returns>
-        public static string Base64PlusStringEncode(this string input)
-        {
-            string result = "";
-
-            if (string.IsNullOrWhiteSpace(input) == false)
-            {
-                byte[] encbuff = System.Text.Encoding.UTF8.GetBytes(input);
-                result = Base64PlusStringEncode(encbuff);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Base64Url encodes a string (valid in REST URL).
+        /// Base64Url-encodes a string.
         /// </summary>
         /// <example>
         /// <code>
@@ -745,20 +724,28 @@ namespace Fynydd.Halide
         /// <returns>A Base64Url-encoded string.</returns>
         public static string Base64UrlEncode(this string input)
         {
-            return Base64PlusStringEncode(input);
+            string result = "";
+
+            if (string.IsNullOrWhiteSpace(input) == false)
+            {
+                byte[] encbuff = System.Text.Encoding.UTF8.GetBytes(input);
+                result = Base64UrlEncode(encbuff);
+            }
+
+            return result;
         }
 
         /// <summary>
-        /// Base64+ decodes a string (valid in REST URL). Handles missing padding characters.
+        /// Base64Url-decode a string. Handles missing padding characters.
         /// </summary>
         /// <example>
         /// <code>
-        /// byte[] decodedVar = Security.Base64PlusStringDecodeToBytes(stringVar);
+        /// byte[] decodedVar = Security.Base64UrlDecodeToBytes(stringVar);
         /// </code>
         /// </example>
-        /// <param name="input">A Base64Plus-encoded string.</param>
+        /// <param name="input">A Base64Url-encoded string.</param>
         /// <returns>A decoded byte array.</returns>
-        public static byte[] Base64PlusStringDecodeToBytes(this string input)
+        public static byte[] Base64UrlDecodeToBytes(this string input)
         {
             byte[] result = null;
 
@@ -790,45 +777,7 @@ namespace Fynydd.Halide
         }
 
         /// <summary>
-        /// Base64Url decodes a string (valid in REST URL). Handles missing padding characters.
-        /// </summary>
-        /// <example>
-        /// <code>
-        /// byte[] decodedVar = Security.Base64UrlDecodeToBytes(stringVar);
-        /// </code>
-        /// </example>
-        /// <param name="input">A Base64Url-encoded string.</param>
-        /// <returns>A decoded byte array.</returns>
-        public static byte[] Base64UrlDecodeToBytes(this string input)
-        {
-            return Base64PlusStringDecodeToBytes(input);
-        }
-
-        /// <summary>
-        /// Base64+ decodes a string (valid in REST URL). Handles missing padding characters.
-        /// </summary>
-        /// <example>
-        /// <code>
-        /// string decodedVar = Security.Base64PlusStringDecode(stringVar);
-        /// </code>
-        /// </example>
-        /// <param name="input">A Base64Plus-encoded string.</param>
-        /// <returns>A decoded string.</returns>
-        public static string Base64PlusStringDecode(this string input)
-        {
-            string result = "";
-
-            if (string.IsNullOrWhiteSpace(input) == false)
-            {
-                byte[] decbuff = Base64PlusStringDecodeToBytes(input);
-                result = System.Text.Encoding.UTF8.GetString(decbuff);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Base64Url decodes a string (valid in REST URL). Handles missing padding characters.
+        /// Base64Url-decode a string. Handles missing padding characters.
         /// </summary>
         /// <example>
         /// <code>
@@ -839,7 +788,15 @@ namespace Fynydd.Halide
         /// <returns>A decoded string.</returns>
         public static string Base64UrlDecodeToString(this string input)
         {
-            return Base64PlusStringDecode(input);
+            string result = "";
+
+            if (string.IsNullOrWhiteSpace(input) == false)
+            {
+                byte[] decbuff = Base64UrlDecodeToBytes(input);
+                result = System.Text.Encoding.UTF8.GetString(decbuff);
+            }
+
+            return result;
         }
 
         #endregion

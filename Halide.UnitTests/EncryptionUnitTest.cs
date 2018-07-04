@@ -22,8 +22,8 @@ namespace Fynydd.Halide.UnitTests
         byte[] baseKey = Encryption.CreateBaseKey("151, 4, 109, 42, 135, 99, 67, 82, 242, 233, 16, 200, 9, 83, 196, 178, 56, 74, 90, 36, 206, 129, 81, 229, 67, 82, 242, 233, 16, 200, 9, 83");
         byte[] initVector = Encryption.CreateInitVector("180, 54, 206, 210, 10, 101, 6, 87, 13, 3, 241, 189, 176, 175, 109, 217");
 
-        string Secret64bit = Encryption.Base64StringEncode("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@");
-        string Secret128bit = Encryption.Base64StringEncode("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@");
+        string Secret64bit = Encryption.Base64Encode("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@");
+        string Secret128bit = Encryption.Base64Encode("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@");
 
         [TestMethod]
         public void Encrypt()
@@ -73,10 +73,10 @@ namespace Fynydd.Halide.UnitTests
         [TestMethod]
         public void Base64()
         {
-            string encoded = Encryption.Base64StringEncode(stringData);
+            string encoded = Encryption.Base64Encode(stringData);
 
             Assert.AreEqual("Tm93IGlzIHRoZSB0aW1lIGZvciBhbGwgZ29vZCBtZW4gdG8gY29tZSB0byB0aGUgYWlkIG9mIHRoZWlyIHBhcnR5Lg==", encoded, "Base64 string encode failure");
-            Assert.AreEqual(stringData, Encryption.Base64StringDecode(encoded), "Base64 string decode failure");
+            Assert.AreEqual(stringData, Encryption.Base64DecodeToString(encoded), "Base64 string decode failure");
 
             encoded = Encryption.Base64UrlEncode(stringData);
 
