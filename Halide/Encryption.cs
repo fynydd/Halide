@@ -346,8 +346,8 @@ namespace Fynydd.Halide
         /// <returns>A BASE64+ encrypted string.</returns>
         public static string Encrypt<T>(this T data)
         {
-            string key = Config.GetKeyValue("EncryptionBaseKey", "Fynydd.Halide");
-            string ivec = Config.GetKeyValue("EncryptionInitVector", "Fynydd.Halide");
+            string key = Config.GetKeyValue<string>("EncryptionBaseKey", "", "Fynydd.Halide");
+            string ivec = Config.GetKeyValue<string>("EncryptionInitVector", "", "Fynydd.Halide");
 
             return Encrypt(data, CreateBaseKey(key), CreateInitVector(ivec));
         }
@@ -381,8 +381,8 @@ namespace Fynydd.Halide
         /// <returns>A decrypted variable</returns>
         public static T Decrypt<T>(this string data)
         {
-            string key = Config.GetKeyValue("EncryptionBaseKey", "Fynydd.Halide");
-            string ivec = Config.GetKeyValue("EncryptionInitVector", "Fynydd.Halide");
+            string key = Config.GetKeyValue<string>("EncryptionBaseKey", "", "Fynydd.Halide");
+            string ivec = Config.GetKeyValue<string>("EncryptionInitVector", "", "Fynydd.Halide");
 
             return Decrypt<T>(data, CreateBaseKey(key), CreateInitVector(ivec));
         }
@@ -532,25 +532,35 @@ namespace Fynydd.Halide
         /// <returns>An MD5 encoded string.</returns>
         public static string MD5String(this string input)
         {
-            // Create a new instance of the MD5CryptoServiceProvider object.
-            MD5 md5Hasher = MD5.Create();
+            string result = "";
 
-            // Convert the input string to a byte array and compute the hash.
-            byte[] data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(input));
-
-            // Create a new Stringbuilder to collect the bytes
-            // and create a string.
-            StringBuilder sBuilder = new StringBuilder();
-
-            // Loop through each byte of the hashed data 
-            // and format each one as a hexadecimal string.
-            for (int i = 0; i < data.Length; i++)
+            if (string.IsNullOrWhiteSpace(input) == false)
             {
-                sBuilder.Append(data[i].ToString("x2"));
+                // Create a new instance of the MD5CryptoServiceProvider object.
+                MD5 md5Hasher = MD5.Create();
+
+                // Convert the input string to a byte array and compute the hash.
+                byte[] data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(input));
+
+                if (data.Length > 0)
+                {
+                    // Create a new Stringbuilder to collect the bytes
+                    // and create a string.
+                    StringBuilder sBuilder = new StringBuilder();
+
+                    // Loop through each byte of the hashed data 
+                    // and format each one as a hexadecimal string.
+                    for (int i = 0; i < data.Length; i++)
+                    {
+                        sBuilder.Append(data[i].ToString("x2"));
+                    }
+
+                    result = sBuilder.ToString();
+                }
             }
 
             // Return the hexadecimal string.
-            return sBuilder.ToString();
+            return result;
         }
 
         /// <summary>
@@ -568,15 +578,18 @@ namespace Fynydd.Halide
         {
             bool result = false;
 
-            // Hash the input.
-            string hashOfInput = MD5String(input);
-
-            // Create a StringComparer and compare the hashes.
-            StringComparer comparer = StringComparer.OrdinalIgnoreCase;
-
-            if (0 == comparer.Compare(hashOfInput, hash))
+            if (string.IsNullOrWhiteSpace(input) == false && string.IsNullOrWhiteSpace(hash) == false)
             {
-                result = true;
+                // Hash the input.
+                string hashOfInput = MD5String(input);
+
+                // Create a StringComparer and compare the hashes.
+                StringComparer comparer = StringComparer.OrdinalIgnoreCase;
+
+                if (0 == comparer.Compare(hashOfInput, hash))
+                {
+                    result = true;
+                }
             }
 
             return result;
@@ -594,8 +607,15 @@ namespace Fynydd.Halide
         /// <returns>A Base64-encoded string.</returns>
         public static string Base64StringEncode(this string input)
         {
-            byte[] encbuff = System.Text.Encoding.UTF8.GetBytes(input);
-            return Convert.ToBase64String(encbuff);
+            string result = "";
+
+            if (string.IsNullOrWhiteSpace(input) == false)
+            {
+                byte[] encbuff = System.Text.Encoding.UTF8.GetBytes(input);
+                result = Convert.ToBase64String(encbuff);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -610,8 +630,15 @@ namespace Fynydd.Halide
         /// <returns>A decoded string.</returns>
         public static string Base64StringDecode(this string input)
         {
-            byte[] decbuff = Convert.FromBase64String(input);
-            return System.Text.Encoding.UTF8.GetString(decbuff);
+            string result = "";
+
+            if (string.IsNullOrWhiteSpace(input) == false)
+            {
+                byte[] decbuff = Convert.FromBase64String(input);
+                result = System.Text.Encoding.UTF8.GetString(decbuff);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -626,7 +653,14 @@ namespace Fynydd.Halide
         /// <returns>A decoded byte array.</returns>
         public static byte[] Base64DecodeToBytes(this string input)
         {
-            return Convert.FromBase64String(input);
+            byte[] result = null;
+
+            if (string.IsNullOrWhiteSpace(input) == false)
+            {
+                result = Convert.FromBase64String(input);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -641,13 +675,24 @@ namespace Fynydd.Halide
         /// <returns>A Base64Plus-encoded string.</returns>
         public static string Base64PlusStringEncode(this byte[] input)
         {
-            var output = Convert.ToBase64String(input);
+            string result = "";
 
-            output = output.Split('=')[0]; // Remove padding
-            output = output.Replace('+', '-'); // 62nd char of encoding
-            output = output.Replace('/', '_'); // 63rd char of encoding
+            if (input != null)
+            {
+                if (input.Length > 0)
+                {
+                    result = Convert.ToBase64String(input);
 
-            return output;
+                    if (string.IsNullOrWhiteSpace(result) == false)
+                    {
+                        result = result.Split('=')[0]; // Remove padding
+                        result = result.Replace('+', '-'); // 62nd char of encoding
+                        result = result.Replace('/', '_'); // 63rd char of encoding
+                    }
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -677,8 +722,15 @@ namespace Fynydd.Halide
         /// <returns>A Base64Plus-encoded string.</returns>
         public static string Base64PlusStringEncode(this string input)
         {
-            byte[] encbuff = System.Text.Encoding.UTF8.GetBytes(input);
-            return Base64PlusStringEncode(encbuff);
+            string result = "";
+
+            if (string.IsNullOrWhiteSpace(input) == false)
+            {
+                byte[] encbuff = System.Text.Encoding.UTF8.GetBytes(input);
+                result = Base64PlusStringEncode(encbuff);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -708,28 +760,33 @@ namespace Fynydd.Halide
         /// <returns>A decoded byte array.</returns>
         public static byte[] Base64PlusStringDecodeToBytes(this string input)
         {
-            var output = input;
+            byte[] result = null;
 
-            output = output.Replace('-', '+'); // 62nd char of encoding
-            output = output.Replace('_', '/'); // 63rd char of encoding
-
-            switch (output.Length % 4) // Pad with trailing '='s
+            if (string.IsNullOrWhiteSpace(input) == false)
             {
-                case 0:
-                    break; // No padding needed
-                case 2:
-                    output += "==";
-                    break;
-                case 3:
-                    output += "=";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(input), "Halide.Encryption Error: Invalid Base64Url encoding");
+                var output = input;
+
+                output = output.Replace('-', '+'); // 62nd char of encoding
+                output = output.Replace('_', '/'); // 63rd char of encoding
+
+                switch (output.Length % 4) // Pad with trailing '='s
+                {
+                    case 0:
+                        break; // No padding needed
+                    case 2:
+                        output += "==";
+                        break;
+                    case 3:
+                        output += "=";
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(input), "Halide.Encryption Error: Invalid Base64Url encoding");
+                }
+
+                result = Convert.FromBase64String(output);
             }
 
-            var converted = Convert.FromBase64String(output);
-
-            return converted;
+            return result;
         }
 
         /// <summary>
@@ -759,8 +816,15 @@ namespace Fynydd.Halide
         /// <returns>A decoded string.</returns>
         public static string Base64PlusStringDecode(this string input)
         {
-            byte[] decbuff = Base64PlusStringDecodeToBytes(input);
-            return System.Text.Encoding.UTF8.GetString(decbuff);
+            string result = "";
+
+            if (string.IsNullOrWhiteSpace(input) == false)
+            {
+                byte[] decbuff = Base64PlusStringDecodeToBytes(input);
+                result = System.Text.Encoding.UTF8.GetString(decbuff);
+            }
+
+            return result;
         }
 
         /// <summary>
