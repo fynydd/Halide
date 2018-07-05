@@ -11,7 +11,7 @@
     <iconUrl>https://fynydd.com/images/halide-icon.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>
-        $description$ Halide includes extension methods for manipulating base types (like strings, byte arrays, numerics), and static helper classes for HTTP and REST helpers, SQL data readers, security and encryption, file compression, SCSS compilation, CSS and JavaScript minification, and more. Halide requires no commercial third party components. You have all the source code, an MIT license, sunshine, and puppies.
+        $description$. Halide includes extension methods for manipulating base types (like strings, byte arrays, numerics), and static helper classes for HTTP and REST helpers, SQL data readers, security and encryption, file compression, SCSS compilation, CSS and JavaScript minification, and more. Halide requires no commercial third party components. You have all the source code, an MIT license, sunshine, and puppies.
     </description>
     <summary>$description$</summary>
     <releaseNotes>Refactored HMAC Javascript Web Token (JWT) generation and validation with added support for HS384 and HS512 with 128-byte secrets, removed Base64Plus methods in favor of Base64Url, fixed encryption key and ivec retrieval from web.config</releaseNotes>
