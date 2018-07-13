@@ -14,7 +14,7 @@
         $description$. Halide includes extension methods for manipulating base types (like strings, byte arrays, numerics), and static helper classes for HTTP and REST helpers, SQL data readers, security and encryption, file compression, SCSS compilation, CSS and JavaScript minification, and more. Halide requires no commercial third party components. You have all the source code, an MIT license, sunshine, and puppies.
     </description>
     <summary>$description$</summary>
-    <releaseNotes>REALLY downgraded the dependency version for Newtonsoft JSON so that it can coexist with UmbracoCMS Core 7.x.</releaseNotes>
+    <releaseNotes>Refactored Temporal.StopWatch() and added TimeSpan support, downgraded the dependency version for Newtonsoft JSON so that it can coexist with UmbracoCMS Core 7.x.</releaseNotes>
     <copyright>$copyright$</copyright>
     <tags>halide aspnet mvc csharp utilities scss</tags>
     <packageTypes>

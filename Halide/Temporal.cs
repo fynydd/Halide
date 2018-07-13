@@ -744,40 +744,11 @@ namespace Fynydd.Halide
     /// </example>
     public class StopWatch
     {
-        #region Variables
-
-        private int _StartTime;
-        private int _StopTime;
-
-        #endregion
-
         #region Properties
 
-        private int StartTime
-        {
-            get
-            {
-                return this._StartTime;
-            }
+        public DateTime StartDate { get; set; }
 
-            set
-            {
-                this._StartTime = value;
-            }
-        }
-
-        private int StopTime
-        {
-            get
-            {
-                return this._StopTime;
-            }
-
-            set
-            {
-                this._StopTime = value;
-            }
-        }
+        public DateTime StopDate { get; set; }
 
         #endregion
 
@@ -801,8 +772,7 @@ namespace Fynydd.Halide
         /// </example>
         public StopWatch()
         {
-            StartTime = 0;
-            StopTime = 0;
+            Reset();
         }
 
         #endregion
@@ -814,22 +784,17 @@ namespace Fynydd.Halide
         /// Sample usage:
         /// <code>
         /// <![CDATA[
-        /// StopWatch sw = new StopWatch();
-        /// sw.Start();
-        /// Trace.Write("Stopwatch", "Process1:" sw.GetTime());
-        /// Trace.Write("Stopwatch", "Process2:" sw.GetTime());
-        /// sw.Stop()
-        /// Trace.Write("Stopwatch", "Process 1 & 2:" sw.GetTime());
+        /// StopWatch stopwatch = new StopWatch();
+        /// stopwatch.Start();
+        /// Temporal.PauseExecution(2000);
+        /// stopwatch.Stop();
+        /// Assert.AreEqual(2, stopwatch.GetSeconds<int>(), "GetSeconds()");
         /// ]]>
         /// </code>
         /// </example>
         public void Start()
         {
-            StartTime =
-                DateTime.Now.Hour * 60 * 60 * 1000 +
-                DateTime.Now.Minute * 60 * 1000 +
-                DateTime.Now.Second * 1000 +
-                DateTime.Now.Millisecond;
+            StartDate = DateTime.Now;
         }
 
         /// <summary>
@@ -839,22 +804,17 @@ namespace Fynydd.Halide
         /// Sample usage:
         /// <code>
         /// <![CDATA[
-        /// StopWatch sw = new StopWatch();
-        /// sw.Start();
-        /// Trace.Write("Stopwatch", "Process1:" sw.GetTime());
-        /// Trace.Write("Stopwatch", "Process2:" sw.GetTime());
-        /// sw.Stop()
-        /// Trace.Write("Stopwatch", "Process 1 & 2:" sw.GetTime());
+        /// StopWatch stopwatch = new StopWatch();
+        /// stopwatch.Start();
+        /// Temporal.PauseExecution(2000);
+        /// stopwatch.Stop();
+        /// Assert.AreEqual(2, stopwatch.GetSeconds<int>(), "GetSeconds()");
         /// ]]>
         /// </code>
         /// </example>
         public void Stop()
         {
-            StopTime =
-                DateTime.Now.Hour * 60 * 60 * 1000 +
-                DateTime.Now.Minute * 60 * 1000 +
-                DateTime.Now.Second * 1000 +
-                DateTime.Now.Millisecond;
+            StopDate = DateTime.Now;
         }
 
         /// <summary>
@@ -864,113 +824,137 @@ namespace Fynydd.Halide
         /// Sample usage:
         /// <code>
         /// <![CDATA[
-        /// StopWatch sw = new StopWatch();
-        /// sw.Start();
-        /// Trace.Write("Stopwatch", "Process1:" sw.GetTime());
-        /// sw.Reset();
-        /// Trace.Write("Stopwatch", "Process2:" sw.GetTime());
-        /// sw.Stop()
-        /// Trace.Write("Stopwatch", "Process 1 & 2:" sw.GetTime());
+        /// StopWatch stopwatch = new StopWatch();
+        /// stopwatch.Start();
+        /// Temporal.PauseExecution(2000);
+        /// stopwatch.Stop();
+        /// stopwatch.Reset();
+        /// Assert.AreEqual(0, stopwatch.GetSeconds<int>(), "GetSeconds()");
         /// ]]>
         /// </code>
         /// </example>
         public void Reset()
         {
-            StartTime = DateTime.Now.Millisecond;
-            StopTime = DateTime.Now.Millisecond;
+            StartDate = DateTime.Now;
+            StopDate = StartDate;
         }
 
         /// <summary>
-        /// Returns the elasped time in milliseconds since the Start of the StopWatch.
-        /// <para>(If Called after the Stop Method)
-        /// Returns a string containing the elasped time between the Start
-        /// of the StopWatch and the Stop of the StopWatch</para>
+        /// Returns the elapsed time in milliseconds since the StopWatch was started.
+        /// If the stopwatch has been stopped, the returned time will always be the same,
+        /// otherwise it will continue to increase.
         /// </summary>
         /// <example>
         /// Sample usage:
         /// <code>
         /// <![CDATA[
-        /// StopWatch sw = new StopWatch();
-        /// sw.Start();
-        /// Trace.Write("Stopwatch", "Process1:" sw.GetTime());
-        /// Trace.Write("Stopwatch", "Process2:" sw.GetTime());
-        /// sw.Stop()
-        /// Trace.Write("Stopwatch", "Process 1 & 2:" sw.GetTime());
+        /// StopWatch stopwatch = new StopWatch();
+        /// stopwatch.Start();
+        /// Temporal.PauseExecution(2000);
+        /// Assert.AreEqual(2000, stopwatch.GetTime<int>(), "GetTime()");
+        /// Temporal.PauseExecution(1000);
+        /// stopwatch.Stop();
+        /// Assert.AreEqual(3000, stopwatch.GetTime<int>(), "GetTime()");
+        /// Temporal.PauseExecution(1000);
+        /// Assert.AreEqual(3000, stopwatch.GetTime<int>(), "GetTime()");
         /// ]]>
         /// </code>
         /// </example>
+        /// <returns>Milliseconds since the stopwatch was started.</returns>
         public T GetTime<T>()
         {
-            int CurrentTime;
-            float Elapsed;
+            double Elapsed = 0;
 
-            CurrentTime =
-                DateTime.Now.Hour * 60 * 60 * 1000 +
-                DateTime.Now.Minute * 60 * 1000 +
-                DateTime.Now.Second * 1000 +
-                DateTime.Now.Millisecond;
-
-            if (StopTime == 0)
+            if (StartDate.Ticks < StopDate.Ticks)
             {
-                Elapsed = (CurrentTime - StartTime);
+                Elapsed = TimeSpan.FromTicks(StopDate.Ticks - StartDate.Ticks).TotalMilliseconds;
             }
 
             else
             {
-                Elapsed = (StopTime - StartTime);
+                Elapsed = TimeSpan.FromTicks(DateTime.Now.Ticks - StartDate.Ticks).TotalMilliseconds;
             }
 
             return (T)(Convert.ChangeType(Elapsed, typeof(T)));
         }
 
         /// <summary>
-        /// Returns the elasped time in milliseconds since the Start of the StopWatch.
-        /// <para>(If Called after the Stop Method)
-        /// Returns a string containing the elasped time between the Start
-        /// of the StopWatch and the Stop of the StopWatch</para>
+        /// Returns the elapsed time in milliseconds since the StopWatch was started.
+        /// If the stopwatch has been stopped, the returned time will always be the same,
+        /// otherwise it will continue to increase.
         /// </summary>
         /// <example>
         /// Sample usage:
         /// <code>
         /// <![CDATA[
-        /// StopWatch sw = new StopWatch();
-        /// sw.Start();
-        /// Trace.Write("Stopwatch", "Process1:" sw.GetTime());
-        /// Trace.Write("Stopwatch", "Process2:" sw.GetTime());
-        /// sw.Stop()
-        /// Trace.Write("Stopwatch", "Process 1 & 2:" sw.GetTime());
+        /// StopWatch stopwatch = new StopWatch();
+        /// stopwatch.Start();
+        /// Temporal.PauseExecution(2000);
+        /// Assert.AreEqual("2000", stopwatch.GetTime(), "GetTime()");
+        /// Temporal.PauseExecution(1000);
+        /// stopwatch.Stop();
+        /// Assert.AreEqual("3000", stopwatch.GetTime(), "GetTime()");
+        /// Temporal.PauseExecution(1000);
+        /// Assert.AreEqual("3000", stopwatch.GetTime(), "GetTime()");
         /// ]]>
         /// </code>
         /// </example>
+        /// <returns>Milliseconds since the stopwatch was started.</returns>
         public string GetTime()
         {
             return GetTime<string>();
         }
 
         /// <summary>
-        /// Returns the elasped time in seconds since the Start of the StopWatch.
-        /// <para>(If Called after the Stop Method)
-        /// Returns a string containing the elasped time between the Start
-        /// of the StopWatch and the Stop of the StopWatch</para>
+        /// Returns the elapsed time in seconds since the StopWatch was started.
+        /// If the stopwatch has been stopped, the returned time will always be the same,
+        /// otherwise it will continue to increase.
         /// </summary>
         /// <example>
         /// Sample usage:
         /// <code>
         /// <![CDATA[
-        /// StopWatch sw = new StopWatch();
-        /// sw.Start();
-        /// Trace.Write("Stopwatch", "Process1:" sw.GetSeconds());
-        /// Trace.Write("Stopwatch", "Process2:" sw.GetSeconds());
-        /// sw.Stop()
-        /// Trace.Write("Stopwatch", "Process 1 & 2:" sw.GetSeconds());
+        /// StopWatch stopwatch = new StopWatch();
+        /// stopwatch.Start();
+        /// Temporal.PauseExecution(2000);
+        /// Assert.AreEqual(2, stopwatch.GetSeconds<int>(), "GetTime()");
+        /// Temporal.PauseExecution(1000);
+        /// stopwatch.Stop();
+        /// Assert.AreEqual(3, stopwatch.GetSeconds<int>(), "GetTime()");
+        /// Temporal.PauseExecution(1000);
+        /// Assert.AreEqual(3, stopwatch.GetSeconds<int>(), "GetTime()");
         /// ]]>
         /// </code>
         /// </example>
+        /// <returns>Seconds since the stopwatch was started.</returns>
         public T GetSeconds<T>()
         {
-            float seconds = GetTime<float>() / (float)1000;
+            double seconds = GetTime<double>() / (double)1000;
 
             return (T)(Convert.ChangeType(seconds, typeof(T)));
+        }
+
+        /// <summary>
+        /// Returns the elapsed time in seconds since the StopWatch was started.
+        /// If the stopwatch has been stopped, the returned time will always be the same,
+        /// otherwise it will continue to increase.
+        /// </summary>
+        /// <example>
+        /// Sample usage:
+        /// <code>
+        /// <![CDATA[
+        /// StopWatch stopwatch = new StopWatch();
+        /// stopwatch.Start();
+        /// Temporal.PauseExecution(2000);
+        /// stopwatch.Stop();
+        /// Assert.AreEqual("00:00:02", stopwatch.GetTimeSpan().ToString(@"hh\:mm\:ss"), "GetTimeSpan() 1 second");
+        /// ]]>
+        /// </code>
+        /// </example>
+        /// <returns>TimeSpan value of the elapsed time.</returns>
+        public TimeSpan GetTimeSpan()
+        {
+            return TimeSpan.FromMilliseconds(GetTime<double>());
         }
     }
 }
