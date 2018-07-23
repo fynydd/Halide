@@ -21,8 +21,8 @@
       <packageType name="Dependency" />
     </packageTypes>
     <dependencies>
-      <dependency id="SharpScss" version="1.4.0" />
-      <dependency id="YUICompressor.NET.Signed" version="3.0.17" />
+      <dependency id="SharpScss" version="[1.4.0]" />
+      <dependency id="YUICompressor.NET.Signed" version="[3.0.17]" />
       <dependency id="Newtonsoft.Json" version="[10.0.2,11.0)" />
     </dependencies>
   </metadata>
