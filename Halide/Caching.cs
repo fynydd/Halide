@@ -13,10 +13,10 @@ namespace Fynydd.Halide
     /// <code>
     /// <![CDATA[
     /// <configSections>
-    ///		<section name="Fynydd.Halide" type="System.Configuration.NameValueFileSectionHandler, System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"/>
+    ///		<section name="Fynydd.Halide" type="System.Configuration.NameValueFileSectionHandler"/>
     /// </configSections>
     /// <Fynydd.Halide>
-    /// 	    <add key="OutputCacheTime" value="300"/>
+    ///     <add key="OutputCacheTime" value="300"/>
     ///		<add key="EncryptionBaseKey" value="10,64,9,2,13,99,67,118,241,133,116,30,217,183,146,18,56,74,90,36,26,129,81,219"/>
     ///		<add key="EncryptionInitVector" value="162,199,183,54,126,11,114,221,16,187,122,221,151,9,176,75,119,17"/>
     /// </Fynydd.Halide>
