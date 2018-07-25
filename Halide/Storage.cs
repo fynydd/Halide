@@ -9,6 +9,7 @@ using System.Web;
 using SharpScss;
 
 using Fynydd.Halide.Constants;
+using System.Collections.Generic;
 
 namespace Fynydd.Halide
 {
@@ -257,6 +258,40 @@ namespace Fynydd.Halide
             for (int i = 0; i < folders.Length; i++)
             {
                 folders[i] = folders[i].Substring(folders[i].LastIndexOf("\\") + 1);
+            }
+
+            return folders;
+        }
+
+        /// <summary>
+        /// Returns the folders within a specified folder, using full relative web paths, including the starting path.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// string[] folderNames = RecurseFolder("/pdf/");
+        /// </code>
+        /// </example>
+        /// <param name="path">Web-formatted parent path to examine.</param>
+        /// <param name="includeRoot">First insert the passed path.</param>
+        /// <returns>String array of fully qualified child folder names (e.g. "/pdf/", "/pdf/child1/", "/pdf/child2/", etc.).</returns>
+        public static ArrayList GetWebFolders(this string path, bool includeRoot = false)
+        {
+            ArrayList folders = new ArrayList();
+            string[] _folders = Directory.GetDirectories(path.MapPath());
+
+            for (int i = 0; i < _folders.Length; i++)
+            {
+                var newPath = path.TrimEnd('/') + "/" + _folders[i].Substring(_folders[i].LastIndexOf("\\") + 1) + "/";
+                folders.Add(newPath);
+
+                folders.AddRange(GetWebFolders(newPath));
+            }
+
+            folders.Sort();
+
+            if (includeRoot == true)
+            {
+                folders.Add(path.TrimEnd('/') + "/");
             }
 
             return folders;
