@@ -746,23 +746,24 @@ namespace Fynydd.Halide
                     context = HttpContext.Current;
                 }
 
-                if (context.Application[activityName + "_Seconds"] == null || context.Application[activityName + "_Running"] == null)
+                if (Caching.CacheValid(activityName + "_Seconds", context) == false || Caching.CacheValid(activityName + "_Running", context) == false)
                 {
-                    context.Application[activityName + "_Running"] = false;
-                    context.Application[activityName + "_Seconds"] = seconds;
+                    Caching.CachePermanent(activityName + "_Running", false, context);
+                    Caching.CachePermanent(activityName + "_Seconds", seconds, context);
+                    Caching.CacheDelete(activityName + "_Waiting", context);
 
-                    Debug.WriteLine("Halide.Temporal.TaskIntervalInit - DONE");
+                    Debug.WriteLine("Halide.Temporal.TaskIntervalInit (" + activityName + ") - INITIALIZED");
                 }
 
                 else
                 {
-                    Debug.WriteLine("Halide.Temporal.TaskIntervalInit - ALREADY INITIALIZED");
+                    Debug.WriteLine("Halide.Temporal.TaskIntervalInit (" + activityName + ") - ALREADY INITIALIZED, skipping");
                 }
             }
 
             catch (Exception e)
             {
-                Debug.WriteLine("Halide.Temporal EXCEPTION: TaskIntervalInit - " + e.Message);
+                Debug.WriteLine("Halide.Temporal EXCEPTION: TaskIntervalInit (" + activityName + ") - " + e.Message);
             }
         }
 
@@ -783,14 +784,15 @@ namespace Fynydd.Halide
                     context = HttpContext.Current;
                 }
 
-                context.Application[activityName + "_Running"] = true;
+                Caching.CachePermanent(activityName + "_Running", true, context);
+                Caching.CacheDelete(activityName + "_Waiting", context);
 
-                Debug.WriteLine("Halide.Temporal.TaskIntervalStart - DONE");
+                Debug.WriteLine("Halide.Temporal.TaskIntervalStart (" + activityName + ") - STARTED");
             }
 
             catch (Exception e)
             {
-                Debug.WriteLine("Halide.Temporal EXCEPTION: TaskIntervalStart - " + e.Message);
+                Debug.WriteLine("Halide.Temporal EXCEPTION: TaskIntervalStart (" + activityName + ") - " + e.Message);
             }
         }
 
@@ -811,15 +813,28 @@ namespace Fynydd.Halide
                     context = HttpContext.Current;
                 }
 
-                context.Application[activityName + "_Running"] = false;
-                context.Application[activityName + "_LastRun"] = DateTime.Now;
+                Caching.CachePermanent(activityName + "_Running", false, context);
 
-                Debug.WriteLine("Halide.Temporal.TaskIntervalStop - DONE");
+                if (Caching.CacheValid(activityName + "_Seconds", context))
+                {
+                    Caching.Cache(activityName + "_Waiting", DateTime.Now.AddSeconds(Caching.Cache<double>(activityName + "_Seconds", context)), DateTime.Now.AddSeconds(Caching.Cache<double>(activityName + "_Seconds", context)), context);
+
+                    Debug.WriteLine("Halide.Temporal.TaskIntervalStop (" + activityName + ") - STOPPED");
+                }
+
+                else
+                {
+                    Caching.CacheDelete(activityName + "_Running", context);
+                    Caching.CacheDelete(activityName + "_Seconds", context);
+                    Caching.CacheDelete(activityName + "_Waiting", context);
+
+                    Debug.WriteLine("Halide.Temporal.TaskIntervalStop (" + activityName + ") - task time doesn't exist; resetting");
+                }
             }
 
             catch (Exception e)
             {
-                Debug.WriteLine("Halide.Temporal EXCEPTION: TaskIntervalStop - " + e.Message);
+                Debug.WriteLine("Halide.Temporal EXCEPTION: TaskIntervalStop (" + activityName + ") - " + e.Message);
             }
         }
 
@@ -840,12 +855,13 @@ namespace Fynydd.Halide
                 context = HttpContext.Current;
             }
 
-            if (context.Application[activityName + "_Running"] != null)
+            if (Caching.CacheValid(activityName + "_Running", context) == true)
             {
-                result = Convert.ToBoolean(context.Application[activityName + "_Running"].ToString());
+                result = Caching.Cache<bool>(activityName + "_Running", context);
             }
 
-            Debug.WriteLine("Halide.Temporal.TaskIsRunning - " + (result == true ? "YES" : "NO"));
+            Debug.WriteLine("Halide.Temporal.TaskIsRunning (" + activityName + ") - " + (result == true ? "YES" : "NO"));
+
             return result;
         }
 
@@ -862,60 +878,38 @@ namespace Fynydd.Halide
         {
             bool result = true;
 
-            double seconds = 0;
-            bool running = TaskIsRunning(activityName, context);
-            DateTime lastRun = DateTime.MinValue;
-
             if (context == null)
             {
                 context = HttpContext.Current;
             }
 
-            if (context.Application[activityName + "_Seconds"] != null)
-            {
-                seconds = Convert.ToDouble(context.Application[activityName + "_Seconds"].ToString());
-            }
-
-            if (context.Application[activityName + "_LastRun"] != null)
-            {
-                lastRun = Convert.ToDateTime(context.Application[activityName + "_LastRun"].ToString());
-            }
-
-            if (seconds > 0)
+            if (Caching.CacheValid(activityName + "_Waiting", context) == false)
             {
                 try
                 {
-                    if (running == true)
+                    if (TaskIsRunning(activityName, context) == true)
                     {
                         result = false;
 
-                        Debug.WriteLine("Halide.Temporal.TaskShouldBeRun - RUNNING");
-                    }
-
-                    else if (lastRun != DateTime.MinValue)
-                    {
-                        if (Temporal.DateDiff<double>(lastRun, DateTime.Now, DateDiffComparisonType.Seconds) < seconds)
-                        {
-                            result = false;
-                            Debug.WriteLine("Halide.Temporal.TaskShouldBeRun - TOO SOON; " + FormatTimer((int)(seconds - Temporal.DateDiff<double>(lastRun, DateTime.Now, DateDiffComparisonType.Seconds)), " ") + " to go");
-                        }
+                        Debug.WriteLine("Halide.Temporal.TaskShouldBeRun (" + activityName + ") - ALREADY RUNNING");
                     }
                 }
 
                 catch (Exception e)
                 {
-                    Debug.WriteLine("Halide.Temporal EXCEPTION: TaskShouldBeRun - " + e.Message);
+                    Debug.WriteLine("Halide.Temporal EXCEPTION: TaskShouldBeRun (" + activityName + ") - " + e.Message);
                 }
             }
 
             else
             {
-                Debug.WriteLine("Halide.Temporal.TaskShouldBeRun - Seconds is zero");
-
                 result = false;
+
+                Debug.WriteLine("Halide.Temporal.TaskShouldBeRun (" + activityName + ") - TOO SOON; " + FormatTimer((int)(Temporal.DateDiff<double>(DateTime.Now, Caching.Cache<DateTime>(activityName + "_Waiting", context), DateDiffComparisonType.Seconds)), " ") + " to go");
             }
 
-            Debug.WriteLine("Halide.Temporal.TaskShouldBeRun - " + (result == true ? "YES" : "NO"));
+            Debug.WriteLine("Halide.Temporal.TaskShouldBeRun (" + activityName + ") - " + (result == true ? "YES" : "NO"));
+
             return result;
         }
 
